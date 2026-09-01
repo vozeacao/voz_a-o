@@ -1,0 +1,704 @@
+<div id="voz-app"></div>
+<style>
+#voz-app{
+  --purple-900:#4a3f6b;
+  --purple-700:#6b5b95;
+  --purple-500:#8a7cb8;
+  --purple-200:#e3ddf2;
+  --purple-100:#f2effa;
+  --teal:#2ca6a4;
+  --ink:#3d3a4a;
+  --paper:#ffffff;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  color:var(--ink);
+  background:var(--paper);
+  max-width:880px;
+  margin:0 auto;
+  padding:0 0 60px 0;
+  line-height:1.55;
+}
+#voz-app *{box-sizing:border-box;}
+#voz-app h1,#voz-app h2,#voz-app h3{font-weight:800;color:var(--purple-900);margin:0;}
+#voz-app .stripes{
+  background:repeating-linear-gradient(45deg, var(--purple-200), var(--purple-200) 10px, #ffffff 10px, #ffffff 20px);
+  border:2px solid var(--purple-500);
+  border-radius:14px;
+  padding:22px 26px;
+  margin:22px 0 18px 0;
+}
+#voz-app .eyebrow{
+  font-size:12px;letter-spacing:2px;font-weight:700;color:var(--purple-700);text-transform:uppercase;
+}
+#voz-app .badge{
+  display:inline-block;background:var(--purple-700);color:#fff;font-weight:700;font-size:13px;
+  padding:6px 16px;border-radius:20px;margin-top:8px;
+}
+#voz-app nav{display:flex;gap:10px;margin:18px 0 6px 0;}
+#voz-app nav button{
+  flex:1;padding:12px;border-radius:10px;border:2px solid var(--purple-500);
+  background:#fff;color:var(--purple-700);font-weight:700;cursor:pointer;font-size:14px;
+}
+#voz-app nav button.active{background:var(--purple-700);color:#fff;}
+#voz-app section.week{
+  border:1px solid var(--purple-200);border-left:6px solid var(--purple-700);
+  border-radius:10px;padding:18px 20px;margin:18px 0;background:#fbfaff;
+}
+#voz-app section.week h3{font-size:19px;}
+#voz-app .desc{color:#5c5670;font-size:14px;margin:8px 0 14px 0;}
+#voz-app .tip{color:var(--teal);font-weight:600;}
+#voz-app label.field{display:block;font-size:13px;font-weight:700;color:var(--purple-700);margin:12px 0 4px 0;}
+#voz-app input[type=text], #voz-app input[type=email], #voz-app textarea{
+  width:100%;padding:10px 12px;border:1.5px solid var(--purple-200);border-radius:8px;
+  font-size:14px;font-family:inherit;color:var(--ink);background:#fff;
+}
+#voz-app textarea{min-height:56px;resize:vertical;}
+#voz-app .day-block{border-top:1px dashed var(--purple-200);padding-top:12px;margin-top:12px;}
+#voz-app .day-tag{
+  display:inline-block;background:var(--purple-500);color:#fff;font-weight:700;font-size:11px;
+  padding:3px 10px;border-radius:6px;margin-bottom:6px;
+}
+#voz-app table.check{width:100%;border-collapse:collapse;margin-top:6px;font-size:13px;}
+#voz-app table.check td{padding:6px 4px;border-bottom:1px solid var(--purple-100);}
+#voz-app table.check td.item{color:var(--ink);}
+#voz-app table.check select{padding:4px 6px;border-radius:6px;border:1px solid var(--purple-200);}
+#voz-app .habits table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px;}
+#voz-app .habits th,#voz-app .habits td{text-align:center;padding:4px;border:1px solid var(--purple-100);}
+#voz-app .habits th:first-child,#voz-app .habits td:first-child{text-align:left;}
+#voz-app .moodrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+#voz-app .mood-chip{
+  border:2px solid var(--purple-200);border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;
+  cursor:pointer;color:var(--ink);
+}
+#voz-app .mood-chip.sel{border-color:var(--teal);background:var(--teal);color:#fff;}
+#voz-app .wheel-cat{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:13px;}
+#voz-app .wheel-cat label{width:150px;font-weight:700;color:var(--purple-700);}
+#voz-app .wheel-cat input[type=range]{flex:1;}
+#voz-app .wheel-cat span{width:24px;text-align:center;font-weight:700;}
+#voz-app .submit-bar{position:sticky;bottom:0;background:#fff;padding:14px 0;border-top:2px solid var(--purple-200);}
+#voz-app button.primary{
+  background:var(--purple-700);color:#fff;border:none;padding:14px 22px;border-radius:10px;
+  font-weight:700;font-size:15px;cursor:pointer;width:100%;
+}
+#voz-app button.primary:hover{background:var(--purple-900);}
+#voz-app .msg{padding:12px 16px;border-radius:8px;font-size:14px;margin:12px 0;}
+#voz-app .msg.ok{background:#e5f6f0;color:#166955;border:1px solid #9fd9c4;}
+#voz-app .msg.err{background:#fbe7e7;color:#8a2b2b;border:1px solid #f0b8b8;}
+#voz-app .gest-card{border:1px solid var(--purple-200);border-radius:10px;padding:16px;margin:12px 0;}
+#voz-app .gest-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;}
+#voz-app .stat{background:var(--purple-100);border-radius:10px;padding:12px;text-align:center;}
+#voz-app .stat b{font-size:24px;color:var(--purple-900);display:block;}
+#voz-app details{border:1px solid var(--purple-200);border-radius:8px;padding:8px 12px;margin:8px 0;}
+#voz-app details summary{cursor:pointer;font-weight:700;color:var(--purple-700);}
+#voz-app .answer-block{margin:6px 0;font-size:13px;}
+#voz-app .answer-block b{color:var(--purple-700);}
+#voz-app .gate{max-width:320px;margin:40px auto;text-align:center;}
+</style>
+
+<script>
+(function(){
+  const root = document.getElementById('voz-app');
+
+  const WHEEL_CATS = ["Autoconhecimento","Presença","Empatia","Escuta","Linguagem","CNV","Assertividade",
+    "Autenticidade","Conversas difíceis","Storytelling","Feedback","Confiança"];
+
+  const MOODS = ["Falante","Irritado","Empático","Calado"];
+
+  const ICONS = {
+    dumbbell: `<svg viewBox="0 0 24 24" width="20" height="20"><g fill="none" stroke="#6b5b95" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="9" width="3" height="6" rx="1"/><rect x="20" y="9" width="3" height="6" rx="1"/><rect x="4" y="7" width="2.4" height="10" rx="1"/><rect x="17.6" y="7" width="2.4" height="10" rx="1"/><line x1="6.4" y1="12" x2="17.6" y2="12"/></g></svg>`,
+    sleep: `<svg viewBox="0 0 24 24" width="20" height="20"><g fill="none" stroke="#6b5b95" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5a7 7 0 1 0 6 10 7.5 7.5 0 0 1-6-10z"/></g><text x="16" y="8" font-size="6" fill="#2ca6a4" font-weight="700">z</text><text x="19" y="5" font-size="4.5" fill="#2ca6a4" font-weight="700">z</text></svg>`,
+    meditation: `<svg viewBox="0 0 24 24" width="20" height="20"><g fill="none" stroke="#6b5b95" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5.2" r="2"/><path d="M4 16c1.5-3 4-4 5-4h6c1 0 3.5 1 5 4"/><path d="M6 16c0 2 2.5 3 6 3s6-1 6-3"/></g></svg>`,
+    pray: `<svg viewBox="0 0 24 24" width="20" height="20"><g fill="none" stroke="#6b5b95" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M12 6c-1 2-4 2.5-4 6 0 3 2 4.5 4 7 2-2.5 4-4 4-7 0-3.5-3-4-4-6z"/></g></svg>`,
+    water: `<svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2c3.5 4.5 6 7.8 6 11.5A6 6 0 0 1 6 13.5C6 9.8 8.5 6.5 12 2z" fill="none" stroke="#6b5b95" stroke-width="1.8" stroke-linejoin="round"/></svg>`,
+    moodFace: (kind)=>{
+      const faces = {
+        Falante: '<circle cx="9" cy="10" r="1.3" fill="#3d3a4a"/><circle cx="15" cy="10" r="1.3" fill="#3d3a4a"/><path d="M8 14.5c1.3 1.3 6.7 1.3 8 0" stroke="#3d3a4a" stroke-width="1.4" fill="none" stroke-linecap="round"/>',
+        Irritado: '<path d="M7.5 9.5l3 1M16.5 9.5l-3 1" stroke="#3d3a4a" stroke-width="1.4" stroke-linecap="round"/><path d="M8 15c1.3-1.3 6.7-1.3 8 0" stroke="#3d3a4a" stroke-width="1.4" fill="none" stroke-linecap="round"/>',
+        Empático: '<circle cx="9" cy="10.5" r="1.1" fill="#3d3a4a"/><circle cx="15" cy="10.5" r="1.1" fill="#3d3a4a"/><path d="M8.5 14c1.2 1 5.8 1 7 0" stroke="#3d3a4a" stroke-width="1.4" fill="none" stroke-linecap="round"/>',
+        Calado: '<line x1="8" y1="10.5" x2="10" y2="10.5" stroke="#3d3a4a" stroke-width="1.4" stroke-linecap="round"/><line x1="14" y1="10.5" x2="16" y2="10.5" stroke="#3d3a4a" stroke-width="1.4" stroke-linecap="round"/><line x1="8.5" y1="15" x2="15.5" y2="15" stroke="#3d3a4a" stroke-width="1.4" stroke-linecap="round"/>'
+      };
+      return `<svg viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="10.5" fill="#f2effa" stroke="#8a7cb8" stroke-width="1.4"/>${faces[kind]}</svg>`;
+    },
+    fireworks: `<svg viewBox="0 0 120 70" width="100%" height="60"><g stroke="#8a7cb8" stroke-width="1.6" stroke-linecap="round">
+      <g transform="translate(18,20)"><line x1="0" y1="-9" x2="0" y2="9"/><line x1="-9" y1="0" x2="9" y2="0"/><line x1="-6" y1="-6" x2="6" y2="6"/><line x1="-6" y1="6" x2="6" y2="-6"/></g>
+      <g transform="translate(60,12) scale(0.7)"><line x1="0" y1="-9" x2="0" y2="9"/><line x1="-9" y1="0" x2="9" y2="0"/><line x1="-6" y1="-6" x2="6" y2="6"/><line x1="-6" y1="6" x2="6" y2="-6"/></g>
+      <g transform="translate(102,28) scale(0.5)"><line x1="0" y1="-9" x2="0" y2="9"/><line x1="-9" y1="0" x2="9" y2="0"/><line x1="-6" y1="-6" x2="6" y2="6"/><line x1="-6" y1="6" x2="6" y2="-6"/></g>
+    </g>
+    <g fill="#6b5b95"><rect x="34" y="40" width="6" height="26" rx="2" transform="rotate(18 37 53)"/><polygon points="37,34 30,46 44,46" transform="rotate(18 37 40)"/></g>
+    </svg>`
+  };
+
+  const WEEKS = [
+    {id:1, title:"Semana 01 — Mudança de Perspectiva",
+     desc:"Promover uma visão ampla da situação, aumentando a capacidade de considerar diferentes perspectivas e sentimentos.",
+     type:"pyramid",
+     fields:[
+       {key:"situacao", label:"Situação — descreva uma situação com comunicação desafiadora que vivenciou"},
+       {key:"missao", label:"Minha Missão — qual foi sua intenção ao lidar com a situação?"},
+       {key:"sentimentos", label:"Sentimentos Envolvidos — quais sentimentos surgiram em você?"},
+       {key:"visaoOutro", label:"Visão do Outro — qual foi a percepção do outro?"}
+     ],
+     reflections:[
+       {key:"qui", label:"QUI — Como foi a experiência de preencher a Pirâmide da Perspectiva? Algo foi mais difícil de responder?"},
+       {key:"sex", label:"SEX — O que mudou na sua compreensão após visualizar os diferentes pontos de vista?"}
+     ]},
+    {id:2, title:"Semana 02 — Escuta com Coração",
+     desc:"Todos os dias desta semana escolha uma pessoa para treinar a escuta do coração. Converse sobre qualquer assunto, se auto-observe e faça seu check-list.",
+     type:"checklist",
+     days:["Seg","Ter","Qua","Qui","Sex"],
+     items:["Mantive contato visual","Não interrompi","Não ofereci soluções durante a fala","Validei emoções (sem julgar)","Estava mentalmente presente e atento"]},
+    {id:3, title:"Semana 03 — Aprimorando a Empatia",
+     desc:"Nas situações do dia a dia, exercite escrever como seria responder de forma empática.",
+     tip:"Dicas: comece validando o sentimento (\"Imagino que isso tenha sido difícil...\"); evite conselhos automáticos; mostre presença; use frases como \"Faz sentido você se sentir assim.\"",
+     type:"situations",
+     days:["Seg","Ter","Qua","Qui"],
+     reflections:[{key:"sex", label:"SEX — Em quais momentos você sentiu que a validação empática ajudou a melhorar a conexão ou o diálogo?"}]},
+    {id:4, title:"Semana 04 — Diário da Gratidão Empática",
+     desc:"Registre diariamente sua gratidão por situações vividas e envie para a pessoa envolvida. Exemplo: \"Te agradeço pelo feedback que me deu, pois você me fez perceber que preciso melhorar a escuta.\"",
+     type:"journal",
+     days:["Seg","Ter","Qua","Qui"],
+     reflections:[{key:"sex", label:"SEX — Reflita: o que a atitude da Gratidão diz sobre seus valores ou suas emoções?"}]}
+  ];
+
+  const state = {
+    view: 'respond',
+    nome:'', email:'',
+    weeks: {}, // weekId -> data
+    conquistas:['','',''],
+    aprendizados:'',
+    wheel: {}
+  };
+  WEEKS.forEach(w=>{
+    state.weeks[w.id] = {fields:{}, days:{}, reflections:{}, habits:{}, mood:''};
+  });
+  WHEEL_CATS.forEach(c=>state.wheel[c]=5);
+
+  function el(tag, cls, html){
+    const e = document.createElement(tag);
+    if(cls) e.className = cls;
+    if(html!==undefined) e.innerHTML = html;
+    return e;
+  }
+
+  function sanitizeKey(s){ return (s||'').trim().toLowerCase(); }
+
+  function habitsBlock(weekId){
+    const habitsList = [
+      {name:"Exercício", icon:ICONS.dumbbell},
+      {name:"Sono Bom", icon:ICONS.sleep},
+      {name:"Meditação", icon:ICONS.meditation},
+      {name:"Espiritualidade", icon:ICONS.pray},
+      {name:"2L de Água", icon:ICONS.water}
+    ];
+    const dayLetters = ["S","T","Q","Q","S","S","D"];
+    const wrap = el('div','habits');
+    wrap.appendChild(el('label','field','Hábitos semanais'));
+    const table = document.createElement('table');
+    const head = document.createElement('tr');
+    head.appendChild(el('th','',''));
+    dayLetters.forEach(d=>head.appendChild(el('th','',d)));
+    table.appendChild(head);
+    habitsList.forEach(h=>{
+      const row = document.createElement('tr');
+      const nameTd = el('td','', `<span style="display:flex;align-items:center;gap:6px;justify-content:flex-start">${h.icon}<span>${h.name}</span></span>`);
+      row.appendChild(nameTd);
+      for(let i=0;i<7;i++){
+        const td = document.createElement('td');
+        const cb = document.createElement('input');
+        cb.type='checkbox';
+        cb.onchange = ()=>{
+          state.weeks[weekId].habits[h.name+'_'+i] = cb.checked;
+        };
+        td.appendChild(cb);
+        row.appendChild(td);
+      }
+      table.appendChild(row);
+    });
+    wrap.appendChild(table);
+
+    wrap.appendChild(el('label','field','Meu mood da comunicação esta semana'));
+    const moodRow = el('div','moodrow');
+    MOODS.forEach(m=>{
+      const chip = el('div','mood-chip', `<div style="text-align:center">${ICONS.moodFace(m)}<div>${m}</div></div>`);
+      chip.onclick = ()=>{
+        state.weeks[weekId].mood = m;
+        [...moodRow.children].forEach(c=>c.classList.remove('sel'));
+        chip.classList.add('sel');
+      };
+      moodRow.appendChild(chip);
+    });
+    wrap.appendChild(moodRow);
+    return wrap;
+  }
+
+  function renderWeek(w){
+    const sec = el('section','week');
+    sec.appendChild(el('h3','',w.title));
+    sec.appendChild(el('div','desc',w.desc));
+    if(w.tip) sec.appendChild(el('div','desc tip',w.tip));
+
+    if(w.type==='pyramid'){
+      const pyramidSvg = `<svg viewBox="0 0 320 260" style="max-width:320px;display:block;margin:10px auto 18px auto">
+        <defs>
+          <linearGradient id="pyrGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#8a7cb8"/>
+            <stop offset="100%" stop-color="#4a3f6b"/>
+          </linearGradient>
+        </defs>
+        <polygon points="160,20 260,220 60,220" fill="url(#pyrGrad)"/>
+        <line x1="160" y1="20" x2="160" y2="220" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.7"/>
+        <line x1="60" y1="220" x2="260" y2="220" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.4"/>
+        <text x="160" y="14" text-anchor="middle" font-size="12" font-weight="700" fill="#4a3f6b">Minha Missão</text>
+        <text x="270" y="120" text-anchor="start" font-size="12" font-weight="700" fill="#4a3f6b">Situação</text>
+        <text x="60" y="245" text-anchor="middle" font-size="12" font-weight="700" fill="#4a3f6b">Sentimentos Envolvidos</text>
+        <text x="260" y="245" text-anchor="middle" font-size="12" font-weight="700" fill="#4a3f6b">Visão do Outro</text>
+      </svg>`;
+      sec.appendChild(el('div','',pyramidSvg));
+      w.fields.forEach(f=>{
+        sec.appendChild(el('label','field',f.label));
+        const ta = document.createElement('textarea');
+        ta.oninput = ()=> state.weeks[w.id].fields[f.key]=ta.value;
+        sec.appendChild(ta);
+      });
+      w.reflections.forEach(r=>{
+        sec.appendChild(el('label','field',r.label));
+        const ta = document.createElement('textarea');
+        ta.oninput = ()=> state.weeks[w.id].reflections[r.key]=ta.value;
+        sec.appendChild(ta);
+      });
+    }
+
+    if(w.type==='checklist'){
+      w.days.forEach(d=>{
+        const db = el('div','day-block');
+        db.appendChild(el('div','day-tag',d));
+        const table = document.createElement('table');
+        table.className='check';
+        w.items.forEach(item=>{
+          const row = document.createElement('tr');
+          row.appendChild(el('td','item',item));
+          const td = document.createElement('td');
+          const sel = document.createElement('select');
+          ['— selecione —','Cumpri','Não Cumpri'].forEach(o=>{
+            const opt = document.createElement('option'); opt.textContent=o; sel.appendChild(opt);
+          });
+          sel.onchange = ()=>{
+            state.weeks[w.id].days[d+'|'+item] = sel.value;
+          };
+          td.appendChild(sel);
+          row.appendChild(td);
+          table.appendChild(row);
+        });
+        db.appendChild(table);
+        sec.appendChild(db);
+      });
+    }
+
+    if(w.type==='situations'){
+      w.days.forEach((d,i)=>{
+        const db = el('div','day-block');
+        db.appendChild(el('div','day-tag',d+' — Situação '+(i+1)));
+        db.appendChild(el('label','field','Situação'));
+        const ta1 = document.createElement('textarea');
+        ta1.oninput = ()=> state.weeks[w.id].days[d+'_situacao']=ta1.value;
+        db.appendChild(ta1);
+        db.appendChild(el('label','field','Resposta empática'));
+        const ta2 = document.createElement('textarea');
+        ta2.oninput = ()=> state.weeks[w.id].days[d+'_resposta']=ta2.value;
+        db.appendChild(ta2);
+        sec.appendChild(db);
+      });
+      w.reflections.forEach(r=>{
+        sec.appendChild(el('label','field',r.label));
+        const ta = document.createElement('textarea');
+        ta.oninput = ()=> state.weeks[w.id].reflections[r.key]=ta.value;
+        sec.appendChild(ta);
+      });
+    }
+
+    if(w.type==='journal'){
+      w.days.forEach(d=>{
+        const db = el('div','day-block');
+        db.appendChild(el('div','day-tag',d));
+        const ta = document.createElement('textarea');
+        ta.placeholder = 'Registre sua gratidão empática de hoje...';
+        ta.oninput = ()=> state.weeks[w.id].days[d]=ta.value;
+        db.appendChild(ta);
+        sec.appendChild(db);
+      });
+      w.reflections.forEach(r=>{
+        sec.appendChild(el('label','field',r.label));
+        const ta = document.createElement('textarea');
+        ta.oninput = ()=> state.weeks[w.id].reflections[r.key]=ta.value;
+        sec.appendChild(ta);
+      });
+    }
+
+    sec.appendChild(habitsBlock(w.id));
+    return sec;
+  }
+
+  function drawRadar(values, size=340){
+    const cats = WHEEL_CATS;
+    const c = size/2, r = size/2 - 46;
+    const n = cats.length;
+    function pt(i,val){
+      const ang = -Math.PI/2 + i*2*Math.PI/n;
+      const rad = r*(val/10);
+      return [c+rad*Math.cos(ang), c+rad*Math.sin(ang)];
+    }
+    let svg = `<svg viewBox="0 0 ${size} ${size}" width="100%" style="max-width:${size}px">`;
+    for(let ring=2;ring<=10;ring+=2){
+      let pts=[];
+      for(let i=0;i<n;i++){ pts.push(pt(i,ring).join(',')); }
+      svg += `<polygon points="${pts.join(' ')}" fill="none" stroke="#e3ddf2" stroke-width="1"/>`;
+    }
+    for(let i=0;i<n;i++){
+      const [x,y] = pt(i,10);
+      svg += `<line x1="${c}" y1="${c}" x2="${x}" y2="${y}" stroke="#e3ddf2" stroke-width="1"/>`;
+      const [lx,ly] = pt(i,12.6);
+      svg += `<text x="${lx}" y="${ly}" font-size="9" fill="#6b5b95" text-anchor="middle" font-weight="700">${cats[i]}</text>`;
+    }
+    let poly = [];
+    for(let i=0;i<n;i++){ poly.push(pt(i, values[i]).join(',')); }
+    svg += `<polygon points="${poly.join(' ')}" fill="#2ca6a4" fill-opacity="0.35" stroke="#2ca6a4" stroke-width="2"/>`;
+    svg += `</svg>`;
+    return svg;
+  }
+
+  function renderReflections(){
+    const sec = el('section','week');
+    sec.appendChild(el('div','',ICONS.fireworks));
+    sec.appendChild(el('h3','','Reflexões Gerais — Empatia'));
+    sec.appendChild(el('label','field','3 conquistas para celebrar'));
+    for(let i=0;i<3;i++){
+      const inp = document.createElement('input'); inp.type='text';
+      inp.style.marginBottom='6px';
+      inp.oninput = ()=> state.conquistas[i]=inp.value;
+      sec.appendChild(inp);
+    }
+    sec.appendChild(el('label','field','Meus aprendizados no tema'));
+    const ta = document.createElement('textarea');
+    ta.oninput = ()=> state.aprendizados = ta.value;
+    sec.appendChild(ta);
+
+    sec.appendChild(el('h3','','Autoavaliação da Comunicação'));
+    sec.appendChild(el('div','desc','Avalie seu nível de EMPATIA colorindo a roda abaixo com a pontuação que melhor representa sua habilidade atual nesse tema. Seja sincero! Lembre-se de que você está em uma jornada de desenvolvimento e que sua autopercepção poderá mudar ao longo dos próximos temas, já que todos estão conectados e se complementam. Isso significa que, à medida que concluir cada tema, provavelmente vai aprimorar habilidades já trabalhadas. Para isso, você terá a oportunidade de refazer sua autoavaliação e reconhecer o quanto avançou. A escala é de 1 = pouca habilidade a 10 = elevada habilidade.'));
+    sec.appendChild(el('label','field','Nível de Empatia'));
+    const wheelWrap = el('div','');
+    const preview = el('div',''); preview.style.textAlign='center';
+    WHEEL_CATS.forEach(cat=>{
+      const row = el('div','wheel-cat');
+      row.appendChild(el('label','',cat));
+      const range = document.createElement('input');
+      range.type='range'; range.min=1; range.max=10; range.value=5;
+      const val = el('span','','5');
+      range.oninput = ()=>{
+        state.wheel[cat] = parseInt(range.value);
+        val.textContent = range.value;
+        preview.innerHTML = drawRadar(WHEEL_CATS.map(c=>state.wheel[c]));
+      };
+      row.appendChild(range); row.appendChild(val);
+      wheelWrap.appendChild(row);
+    });
+    sec.appendChild(wheelWrap);
+    preview.innerHTML = drawRadar(WHEEL_CATS.map(c=>state.wheel[c]));
+    sec.appendChild(preview);
+    return sec;
+  }
+
+  async function submitAll(msgHolder){
+    if(!state.nome.trim() || !state.email.trim()){
+      msgHolder.innerHTML = '<div class="msg err">Preencha nome e e-mail antes de enviar.</div>';
+      return;
+    }
+    const payload = {
+      nome: state.nome, email: state.email,
+      submittedAt: new Date().toISOString(),
+      weeks: state.weeks,
+      conquistas: state.conquistas,
+      aprendizados: state.aprendizados,
+      wheel: state.wheel
+    };
+    try{
+      const key = 'resp:'+sanitizeKey(state.email);
+      const r = await window.storage.set(key, JSON.stringify(payload), true);
+      if(r){
+        msgHolder.innerHTML = '<div class="msg ok">Respostas enviadas com sucesso! Obrigado por participar. Você pode reenviar a qualquer momento para atualizar suas respostas.</div>';
+      } else {
+        msgHolder.innerHTML = '<div class="msg err">Não foi possível salvar agora. Tente novamente.</div>';
+      }
+    }catch(e){
+      msgHolder.innerHTML = '<div class="msg err">Erro ao salvar: '+e+'</div>';
+    }
+  }
+
+  function renderRespondView(){
+    const wrap = el('div','');
+    const banner = el('div','stripes');
+    banner.innerHTML = `<div class="eyebrow">Voz em Ação — Sua Jornada na Comunicação</div>
+      <h1 style="display:flex;align-items:center;gap:10px">Empatia
+        <svg width="30" height="30" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-9.5-8.8C.8 8 2 4.5 5.3 3.6 7.6 3 9.8 4 11 5.8c.4.6 1.6.6 2 0C14.2 4 16.4 3 18.7 3.6 22 4.5 23.2 8 21.5 11.2 19 15.6 12 20 12 20z" fill="none" stroke="#6b5b95" stroke-width="1.6"/></svg>
+      </h1>
+      <div class="badge">Capítulo 1 de vários — teste</div>`;
+    wrap.appendChild(banner);
+
+    const introTexts = [
+      "A empatia é um processo interno de experimentar e imaginar o que a outra pessoa pesaria e pensaria, caso estivesse na mesma situação vivenciada por você. É tentar também compreender os sentimentos e as emoções do outro.",
+      "A empatia leva as pessoas a ajudarem umas às outras. Está intimamente ligada ao altruísmo, ao amor e ao interesse pelo próximo.",
+      "Ela funciona como um músculo que precisa se fortalecer todos os dias, é a prática de você com você mesmo. É o elo de conexão com a nossa própria humanidade.",
+      "A comunicação de forma assertiva pressupõe entendermos o outro e a nós mesmos. Por isso exercitá-la é fundamental em todos os tipos relações.",
+      "A escuta e o interesse pelo outro são as ferramentas mais poderosas para a expressão da empatia.",
+      "A empatia é o elo que transforma a comunicação em uma ponte para conexões verdadeiras. No \"Voz em Ação\", exercitamos a escuta ativa e o entendimento profundo do outro para fortalecer relações e criar diálogos mais construtivos. Comunicar-se com empatia não significa apenas compreender o outro, mas também ajustar nossa expressão para que a mensagem seja recebida com respeito e acolhimento. Quanto mais empáticos somos, mais impacto positivo geramos em nossas interações."
+    ];
+    introTexts.forEach(t => wrap.appendChild(el('p','',t)));
+
+    wrap.appendChild(el('label','field','Nome'));
+    const nomeInp = document.createElement('input'); nomeInp.type='text';
+    nomeInp.oninput = ()=> state.nome = nomeInp.value;
+    wrap.appendChild(nomeInp);
+
+    wrap.appendChild(el('label','field','E-mail'));
+    const emailInp = document.createElement('input'); emailInp.type='email';
+    emailInp.oninput = ()=> state.email = emailInp.value;
+    wrap.appendChild(emailInp);
+
+    WEEKS.forEach(w=> wrap.appendChild(renderWeek(w)));
+    wrap.appendChild(renderReflections());
+
+    const bar = el('div','submit-bar');
+    const msgHolder = el('div','');
+    const btn = el('button','primary','Enviar minhas respostas');
+    btn.onclick = ()=> submitAll(msgHolder);
+    bar.appendChild(btn);
+    bar.appendChild(msgHolder);
+    wrap.appendChild(bar);
+    return wrap;
+  }
+
+  async function loadAllResponses(){
+    const list = await window.storage.list('resp:', true);
+    const keys = (list && list.keys) || [];
+    const out = [];
+    for(const k of keys){
+      try{
+        const r = await window.storage.get(k, true);
+        if(r && r.value) out.push(JSON.parse(r.value));
+      }catch(e){}
+    }
+    return out;
+  }
+
+  function flattenResponse(r){
+    const row = {};
+    row['Nome'] = r.nome || '';
+    row['Email'] = r.email || '';
+    row['Enviado em'] = r.submittedAt ? new Date(r.submittedAt).toLocaleString('pt-BR') : '';
+    WEEKS.forEach(w=>{
+      const wd = (r.weeks && r.weeks[w.id]) || {fields:{},days:{},reflections:{},mood:''};
+      if(w.type==='pyramid'){
+        w.fields.forEach(f=> row[`Semana ${w.id} - ${f.label.split('—')[0].trim()}`] = (wd.fields && wd.fields[f.key]) || '');
+      }
+      if(w.type==='checklist'){
+        w.days.forEach(d=>{
+          const vals = w.items.map(it=> `${it}: ${(wd.days && wd.days[d+'|'+it]) || '-'}`).join(' | ');
+          row[`Semana ${w.id} - ${d}`] = vals;
+        });
+      }
+      if(w.type==='situations'){
+        w.days.forEach(d=>{
+          row[`Semana ${w.id} - ${d} Situação`] = (wd.days && wd.days[d+'_situacao']) || '';
+          row[`Semana ${w.id} - ${d} Resposta empática`] = (wd.days && wd.days[d+'_resposta']) || '';
+        });
+      }
+      if(w.type==='journal'){
+        w.days.forEach(d=> row[`Semana ${w.id} - ${d}`] = (wd.days && wd.days[d]) || '');
+      }
+      Object.keys(wd.reflections||{}).forEach(rk=> row[`Semana ${w.id} - Reflexão (${rk})`] = wd.reflections[rk]);
+      row[`Semana ${w.id} - Mood`] = wd.mood || '';
+    });
+    row['Conquista 1'] = (r.conquistas && r.conquistas[0]) || '';
+    row['Conquista 2'] = (r.conquistas && r.conquistas[1]) || '';
+    row['Conquista 3'] = (r.conquistas && r.conquistas[2]) || '';
+    row['Aprendizados'] = r.aprendizados || '';
+    WHEEL_CATS.forEach(c=> row['Roda - '+c] = (r.wheel && r.wheel[c]) || '');
+    return row;
+  }
+
+  function toCSV(rows){
+    if(rows.length===0) return '';
+    const headers = Object.keys(rows[0]);
+    const escape = v => {
+      const s = (v===undefined || v===null) ? '' : String(v);
+      if(/[",\n;]/.test(s)) return '"'+s.replace(/"/g,'""')+'"';
+      return s;
+    };
+    const lines = [headers.map(escape).join(',')];
+    rows.forEach(r=> lines.push(headers.map(h=>escape(r[h])).join(',')));
+    return lines.join('\n');
+  }
+
+  function downloadCSV(responses){
+    const rows = responses.map(flattenResponse);
+    const csv = toCSV(rows);
+    const blob = new Blob(["\uFEFF"+csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'voz_em_acao_empatia_respostas.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function moodTally(responses, weekId){
+    const tally = {}; MOODS.forEach(m=>tally[m]=0);
+    responses.forEach(r=>{
+      const m = r.weeks && r.weeks[weekId] && r.weeks[weekId].mood;
+      if(m && tally[m]!==undefined) tally[m]++;
+    });
+    return tally;
+  }
+
+  async function renderGestorDashboard(container){
+    container.innerHTML = '<p>Carregando respostas...</p>';
+    const responses = await loadAllResponses();
+    container.innerHTML = '';
+
+    const header = el('div','stripes');
+    header.innerHTML = `<div class="eyebrow">Voz em Ação — Painel do Gestor</div><h1>Empatia · Respostas da equipe</h1>`;
+    container.appendChild(header);
+
+    const exportBar = el('div','');
+    exportBar.style.margin = '10px 0 4px 0';
+    const exportBtn = el('button','primary','⬇ Exportar respostas (CSV)');
+    exportBtn.style.width = 'auto';
+    exportBtn.style.padding = '10px 18px';
+    exportBtn.disabled = responses.length === 0;
+    if(responses.length === 0) exportBtn.style.opacity = '0.5';
+    exportBtn.onclick = ()=> downloadCSV(responses);
+    exportBar.appendChild(exportBtn);
+    container.appendChild(exportBar);
+
+    const statsRow = el('div','gest-grid');
+    statsRow.appendChild(el('div','stat', `<b>${responses.length}</b>Respondentes`));
+    let avgWheel = WHEEL_CATS.map(()=>0);
+    responses.forEach(r=>{
+      WHEEL_CATS.forEach((c,i)=> avgWheel[i]+= (r.wheel && r.wheel[c]) || 0);
+    });
+    if(responses.length>0) avgWheel = avgWheel.map(v=> +(v/responses.length).toFixed(1));
+    const avgEmpatia = responses.length ? avgWheel[WHEEL_CATS.indexOf('Empatia')] : 0;
+    statsRow.appendChild(el('div','stat', `<b>${avgEmpatia}</b>Média em Empatia`));
+    container.appendChild(statsRow);
+
+    if(responses.length>0){
+      const card = el('div','gest-card');
+      card.appendChild(el('h3','','Radar médio da equipe (autoavaliação)'));
+      const radarDiv = el('div',''); radarDiv.style.textAlign='center';
+      radarDiv.innerHTML = drawRadar(avgWheel);
+      card.appendChild(radarDiv);
+      container.appendChild(card);
+
+      const moodCard = el('div','gest-card');
+      moodCard.appendChild(el('h3','','Mood da comunicação por semana'));
+      WEEKS.forEach(w=>{
+        const tally = moodTally(responses, w.id);
+        const p = el('p','', `<b>${w.title.split('—')[0].trim()}:</b> ` +
+          MOODS.map(m=>`${m}: ${tally[m]}`).join(' · '));
+        moodCard.appendChild(p);
+      });
+      container.appendChild(moodCard);
+    }
+
+    const listCard = el('div','gest-card');
+    listCard.appendChild(el('h3','','Respostas individuais'));
+    if(responses.length===0){
+      listCard.appendChild(el('p','','Ainda não há respostas registradas.'));
+    }
+    responses.sort((a,b)=> (b.submittedAt||'').localeCompare(a.submittedAt||''));
+    responses.forEach(r=>{
+      const det = document.createElement('details');
+      const sum = document.createElement('summary');
+      sum.textContent = `${r.nome} — ${r.email} (enviado em ${new Date(r.submittedAt).toLocaleString('pt-BR')})`;
+      det.appendChild(sum);
+
+      const conq = el('div','answer-block', '<b>Conquistas:</b> ' + (r.conquistas||[]).filter(Boolean).join(' · '));
+      det.appendChild(conq);
+      det.appendChild(el('div','answer-block', '<b>Aprendizados:</b> ' + (r.aprendizados||'—')));
+
+      WEEKS.forEach(w=>{
+        const wd = r.weeks && r.weeks[w.id];
+        if(!wd) return;
+        const block = el('div','answer-block');
+        let html = `<b>${w.title}</b><br>`;
+        if(w.type==='pyramid'){
+          w.fields.forEach(f=> html += `${f.label.split('—')[0].trim()}: ${wd.fields[f.key]||'—'}<br>`);
+        }
+        if(w.type==='checklist'){
+          w.days.forEach(d=>{
+            const vals = w.items.map(it => wd.days[d+'|'+it] || '—').join(', ');
+            html += `${d}: ${vals}<br>`;
+          });
+        }
+        if(w.type==='situations'){
+          w.days.forEach(d=>{
+            html += `${d} — Situação: ${wd.days[d+'_situacao']||'—'} | Resposta: ${wd.days[d+'_resposta']||'—'}<br>`;
+          });
+        }
+        if(w.type==='journal'){
+          w.days.forEach(d=> html += `${d}: ${wd.days[d]||'—'}<br>`);
+        }
+        Object.keys(wd.reflections||{}).forEach(rk=> html += `Reflexão (${rk}): ${wd.reflections[rk]}<br>`);
+        html += `Mood: ${wd.mood||'—'}`;
+        block.innerHTML = html;
+        det.appendChild(block);
+      });
+      listCard.appendChild(det);
+    });
+    container.appendChild(listCard);
+  }
+
+  function renderGate(container){
+    container.innerHTML='';
+    const wrap = el('div','gate');
+    wrap.appendChild(el('h2','','Área do Gestor'));
+    wrap.appendChild(el('p','','Digite a senha de acesso ao painel.'));
+    const inp = document.createElement('input'); inp.type='password'; inp.placeholder='Senha';
+    inp.style.width='100%'; inp.style.padding='10px'; inp.style.marginBottom='10px';
+    inp.style.border='1.5px solid var(--purple-200)'; inp.style.borderRadius='8px';
+    const btn = el('button','primary','Entrar');
+    const msg = el('div','');
+    btn.onclick = ()=>{
+      if(inp.value === 'empatia2026'){
+        renderGestorDashboard(container);
+      } else {
+        msg.innerHTML = '<div class="msg err">Senha incorreta.</div>';
+      }
+    };
+    wrap.appendChild(inp); wrap.appendChild(btn); wrap.appendChild(msg);
+    container.appendChild(wrap);
+  }
+
+  function render(){
+    root.innerHTML='';
+    const nav = document.createElement('nav');
+    const b1 = el('button','', 'Responder'); b1.className = state.view==='respond' ? 'active':'';
+    const b2 = el('button','', 'Área do Gestor'); b2.className = state.view==='gestor' ? 'active':'';
+    b1.onclick = ()=>{ state.view='respond'; render(); };
+    b2.onclick = ()=>{ state.view='gestor'; render(); };
+    nav.appendChild(b1); nav.appendChild(b2);
+    root.appendChild(nav);
+
+    const container = el('div','');
+    root.appendChild(container);
+
+    if(state.view==='respond'){
+      container.appendChild(renderRespondView());
+    } else {
+      renderGate(container);
+    }
+  }
+
+  render();
+})();
+</script>

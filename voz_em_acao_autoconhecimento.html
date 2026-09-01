@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voz em Ação — Autoconhecimento</title>
+<style>
+  body{margin:0;background:#fafafd;}
+  #voz-app{
+    --purple-900:#4a3f6b; --purple-700:#6b5b95; --purple-500:#8a7cb8;
+    --purple-200:#e3ddf2; --purple-100:#f2effa; --teal:#2ca6a4; --ink:#3d3a4a; --paper:#ffffff;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    color:var(--ink); background:var(--paper); max-width:880px; margin:0 auto; padding:0 0 60px 0; line-height:1.55;
+  }
+  #voz-app *{box-sizing:border-box;}
+  #voz-app h1,#voz-app h2,#voz-app h3{font-weight:800;color:var(--purple-900);margin:0;}
+  #voz-app .stripes{background:repeating-linear-gradient(45deg, var(--purple-200), var(--purple-200) 10px, #fff 10px, #fff 20px);border:2px solid var(--purple-500);border-radius:14px;padding:22px 26px;margin:22px 0 18px 0;}
+  #voz-app .eyebrow{font-size:12px;letter-spacing:2px;font-weight:700;color:var(--purple-700);text-transform:uppercase;}
+  #voz-app .hello{font-size:15px;color:var(--purple-700);font-weight:700;margin-top:6px;}
+  #voz-app .quote{font-style:italic;color:var(--purple-700);font-size:16px;text-align:center;margin:18px 10px;padding:14px 18px;border-left:4px solid var(--teal);background:var(--purple-100);border-radius:0 10px 10px 0;}
+  #voz-app .quote cite{display:block;font-style:normal;font-weight:700;margin-top:6px;font-size:13px;color:var(--purple-900);}
+  #voz-app section.week{border:1px solid var(--purple-200);border-left:6px solid var(--purple-700);border-radius:10px;padding:18px 20px;margin:18px 0;background:#fbfaff;}
+  #voz-app section.week.done{border-left-color:var(--teal);background:#f4fbfa;}
+  #voz-app h3{font-size:19px;}
+  #voz-app .desc{color:#5c5670;font-size:14px;margin:8px 0 14px 0;}
+  #voz-app .tip{color:var(--teal);font-weight:600;}
+  #voz-app label.field{display:block;font-size:13px;font-weight:700;color:var(--purple-700);margin:12px 0 4px 0;}
+  #voz-app textarea{width:100%;padding:10px 12px;border:1.5px solid var(--purple-200);border-radius:8px;font-size:14px;font-family:inherit;color:var(--ink);background:#fff;min-height:56px;resize:vertical;}
+  #voz-app .item-block{border-top:1px dashed var(--purple-200);padding-top:12px;margin-top:12px;}
+  #voz-app .day-tag{display:inline-block;background:var(--purple-500);color:#fff;font-weight:700;font-size:11px;padding:3px 10px;border-radius:6px;margin-bottom:6px;}
+  #voz-app .phase-tag{display:inline-block;background:var(--purple-900);color:#fff;font-weight:800;font-size:13px;padding:6px 16px;border-radius:20px;margin:18px 0 10px 0;}
+  #voz-app .dual{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;}
+  #voz-app .choice-opt{display:flex;gap:10px;align-items:flex-start;padding:8px 0;font-size:14px;}
+  #voz-app .choice-opt input{margin-top:3px;}
+  #voz-app .stars-row{display:flex;gap:8px;align-items:center;margin:6px 0;}
+  #voz-app .stars-row textarea{min-height:32px;}
+  #voz-app .done-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding-top:14px;border-top:2px solid var(--purple-100);}
+  #voz-app .done-toggle{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;}
+  #voz-app .done-toggle .box{width:26px;height:26px;border-radius:8px;border:2px solid var(--purple-500);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;background:#fff;}
+  #voz-app section.week.done .done-toggle .box{background:var(--teal);border-color:var(--teal);}
+  #voz-app .done-label{font-weight:700;color:var(--purple-700);}
+  #voz-app section.week.done .done-label{color:var(--teal);}
+  #voz-app .savemsg{font-size:12px;color:#8a86a0;}
+  #voz-app .banner-msg.err{padding:14px 18px;border-radius:10px;font-size:14px;margin:24px;background:#fbe7e7;color:#8a2b2b;border:1px solid #f0b8b8;}
+</style>
+</head>
+<body>
+<div id="voz-app"><p style="padding:24px;color:#8a86a0">Carregando...</p></div>
+
+<script>
+(function(){
+  // ======= CONFIGURAÇÃO — cole aqui a URL do seu Apps Script implantado =======
+  const CONFIG = { APPS_SCRIPT_URL: 'COLE_AQUI_A_URL_DO_APPS_SCRIPT_/exec' };
+  // =============================================================================
+
+  const root = document.getElementById('voz-app');
+  const CAPITULO = 'Autoconhecimento';
+  const IDENTITY_KEY = 'voz_em_acao_identity';
+
+  const WEEKS = [
+    {id:1, title:"Semana 01 — Propósito e Impacto na Comunicação",
+     desc:"Identificar e alinhar seus valores e intenções ao se comunicar, tornando sua expressão e mensagens mais autênticas e eficazes.",
+     items:[
+       {tag:'SEG', label:'Quem são as pessoas que você admira na forma de se comunicar?', placeholder:'Ex: Obama, Oprah, Silvio Santos...'},
+       {tag:'TER', label:'Faça uma busca na internet de vídeos das pessoas que você citou e admira — o que observou?', placeholder:'Ex: percebi que ela fala pausadamente e olha nos olhos da plateia...'},
+       {tag:'QUA', label:'Cite 2 ou 3 adjetivos que te agradam nas pessoas que você mencionou:', placeholder:'Ex: carismático, direto, tranquilo...'},
+       {tag:'QUI', label:'Olhando agora para sua comunicação em comparação às pessoas que admira, o que considera que falta em você?', placeholder:'Ex: sinto que me falta mais clareza e pausa ao falar...'},
+       {tag:'SEX', label:'Para encerrar a semana, faça o Teste BEHLAU (encontrado no envelope plástico do planner físico) e anote aqui suas observações:', placeholder:'Ex: descobri que tenho tendência a falar rápido demais...'}
+     ]},
+    {id:2, title:"Semana 02 — Qualidades e Desafios na Comunicação",
+     desc:"Reconhecer pontos fortes e desafios na comunicação, permitindo melhorias contínuas e maior segurança ao se expressar.",
+     items:[
+       {tag:'SEG', label:'Qual mensagem acredita que passa ao se comunicar?', placeholder:'Ex: comunico amor e confiança.'},
+       {tag:'TER', label:'Escolha 3 pessoas da sua confiança e peça feedback sobre sua forma de se comunicar. Anote:', placeholder:'Ex: "O que você gosta na forma que me comunico?"; "O que posso melhorar na minha comunicação?"'},
+       {tag:'QUA', label:'Em que aspectos da comunicação você sente que se destaca?', placeholder:'Ex: escuta com atenção, sou objetivo(a) ao explicar ideias...'},
+       {tag:'QUI', label:'O que acredita que pode e deve melhorar na sua comunicação? O que é mais difícil para você ao se comunicar?', placeholder:'Ex: falo rápido demais quando estou ansioso(a)...'},
+       {tag:'SEX', label:'Quanto aos adjetivos (positivos e negativos) anotados nos exercícios anteriores, reflita sobre como você se sentiu e o que fez sentido para você:', placeholder:'Ex: me identifiquei com "direto(a)", mas me surpreendi com "impaciente"...'}
+     ]},
+    {id:3, title:"Semana 03 — Comunicação Reativa",
+     desc:"Desenvolver consciência sobre padrões na comunicação e trabalhar na construção de diálogos mais equilibrados e respeitosos. Ao longo da semana, observe-se quando alguém discordar de você.",
+     type:'context',
+     contexts:['Contexto 1','Contexto 2','Contexto 3','Contexto 4'],
+     items:[
+       {tag:'SEX', label:'O que você observou e concluiu sobre seus padrões ao ser contrariado?', placeholder:'Ex: percebi que costumo me calar mesmo discordando...'}
+     ]},
+    {id:4, title:"Semana 04 — Influência da Comunicação no Outro",
+     desc:"Refletir sobre como a sua comunicação afeta o outro e como ajustá-la para gerar conexões mais construtivas.",
+     items:[
+       {tag:'SEG', label:'O que o outro faz em um diálogo que te tira do eixo e que te incomoda?', placeholder:'Ex: quando me interrompem ou levantam a voz...'},
+       {tag:'TER', label:'Em situações de conflito você consegue dialogar quando as opiniões são divergentes, ou vai para o confronto? Qual forma de se comunicar considera mais adequada?', placeholder:'Ex: costumo ceder rápido demais para evitar o conflito...'},
+       {tag:'QUA', label:'Em qual padrão de comunicação você mais se identifica?', type:'choice', options:[
+         'Passivo — Concorda e desiste rapidamente.',
+         'Agressivo — Expressa de forma impositiva.',
+         'Passivo-Agressivo — Não expressa objetividade.',
+         'Assertivo — Expressa com clareza e objetividade.'
+       ]},
+       {tag:'QUI', label:'Qual dos comportamentos citados menos representa você? Reflita e registre o porquê:', placeholder:'Ex: o agressivo — não costumo impor minhas opiniões...'},
+       {tag:'SEX', label:'Preencha a Matriz da Comunicação (envelope plástico do planner físico) e anote aqui sua percepção sobre o exercício:', placeholder:'Ex: percebi que mudo de padrão dependendo de quem está na conversa...'}
+     ]},
+    {id:5, title:"Ciclo da Transformação — Autoconhecimento",
+     desc:"Revisite as práticas desta jornada para construir seu Plano de Ação com o Método do Ciclo da Transformação na Comunicação.",
+     type:'cycle',
+     phases:[
+       {name:'01. CONSCIÊNCIA — O que eu percebi?', items:[
+         {tag:'', label:'Qual exercício, atitude ou reflexão foi mais desafiador para você?', placeholder:'Ex: recebi um feedback de que sou prolixo(a).'},
+         {tag:'', label:'O que tornou essa prática desafiadora?', placeholder:'Ex: o fato de eu não imaginar que sou prolixo(a).'},
+         {tag:'', label:'Meu Insight — o que essa experiência fez você perceber sobre sua forma de se comunicar? Complete: "Percebi..."', placeholder:'Percebi que preciso me observar mais na forma de eu me comunicar.'}
+       ]},
+       {name:'02. MOTIVAÇÃO — Por que quero desenvolver?', items:[
+         {tag:'', label:'Por que seria importante desenvolver o que percebeu?', placeholder:'Ex: porque a forma como me comunico é fundamental para transmitir minhas ideias.'},
+         {tag:'', label:'Que diferença essa mudança pode fazer para você, para o outro ou para suas relações?', placeholder:'Ex: vou ser mais objetivo(a) e claro(a) na minha comunicação.'},
+         {tag:'', label:'Meu Porquê — complete: "Quero desenvolver/aprimorar ___ porque ___"', placeholder:'Quero desenvolver a prática de pedir feedbacks porque isso fará com que eu evite ser prolixo(a) e transmita minhas ideias de forma objetiva e clara.'}
+       ]},
+       {name:'03. AÇÃO — Como vou colocar em prática?', items:[
+         {tag:'', label:'O que vou praticar? Que comportamento ou atitude quer incorporar, fortalecer ou fazer diferente?', placeholder:'Ex: vou pedir feedback sobre minha comunicação...'},
+         {tag:'', label:'Como vou praticar? Em quais situações ou relações posso experimentar essa atitude?', placeholder:'Ex: sempre que estiver expondo minhas ideias em reuniões, vou perguntar se me comuniquei de forma clara e objetiva.'},
+         {tag:'', label:'Minhas Ações — 3 ações concretas que vou realizar:', type:'stars',
+          placeholders:['Ex: pedir feedback sobre minha comunicação.','Ex: perguntar se estou sendo objetivo(a) e claro(a).','Ex: me auto-observar mais.']}
+       ]},
+       {name:'Observando o IMPACTO — Como vou perceber minha evolução?', items:[
+         {tag:'', label:'O que comecei a perceber de diferente em mim?', placeholder:'Ex: comecei a me sentir mais tranquilo(a) ao falar.'},
+         {tag:'', label:'O que passei a observar de diferente nas minhas relações?', placeholder:'Ex: percebi o outro prestando mais atenção no que falo.'},
+         {tag:'', label:'Que sinais surgiram com minha evolução?', placeholder:'Ex: tenho recebido feedbacks positivos.'},
+         {tag:'', label:'Minha Nova Consciência — complete: "Hoje reconheço que..."', placeholder:'Hoje reconheço que o autoconhecimento é essencial para o meu desenvolvimento na comunicação.'}
+       ]}
+     ]}
+  ];
+
+  const WHEEL_CATS = ["Autoconhecimento","Presença","Empatia","Escuta","Linguagem","CNV","Assertividade",
+    "Autenticidade","Conversas difíceis","Storytelling","Feedback","Confiança"];
+
+  let profile = null;
+  let reflexoes = {};
+  let wheel = {};
+  let IDENTITY = null; // {nome, email, departamento}
+  WHEEL_CATS.forEach(c=> wheel[c] = 5);
+
+  function el(tag, cls, html){ const e=document.createElement(tag); if(cls) e.className=cls; if(html!==undefined) e.innerHTML=html; return e; }
+
+  function reflexKey(){ return 'voz_reflexoes_'+CAPITULO+'_'+(IDENTITY.email||'').toLowerCase(); }
+  function loadReflexoes(){
+    try{ return JSON.parse(localStorage.getItem(reflexKey())) || {weeks:{}, wheel:{}, conquistas:['','',''], aprendizados:''}; }
+    catch(e){ return {weeks:{}, wheel:{}, conquistas:['','',''], aprendizados:''}; }
+  }
+  function saveReflexoes(){ try{ localStorage.setItem(reflexKey(), JSON.stringify(reflexoes)); }catch(e){} }
+
+  async function api(p){ const url = CONFIG.APPS_SCRIPT_URL + '?' + new URLSearchParams(p).toString(); const res = await fetch(url); return res.json(); }
+
+  const DEMO_MODE = CONFIG.APPS_SCRIPT_URL.indexOf('COLE_AQUI') !== -1;
+  function progressKey(){ return 'voz_progress_'+CAPITULO+'_'+(IDENTITY.email||'').toLowerCase(); }
+  function loadLocalProgress(){ try{ return JSON.parse(localStorage.getItem(progressKey())) || {}; }catch(e){ return {}; } }
+  function saveLocalProgress(p){ try{ localStorage.setItem(progressKey(), JSON.stringify(p)); }catch(e){} }
+
+  async function setWeekDone(weekId, done){
+    const sec = document.getElementById('week-'+weekId);
+    sec.classList.toggle('done', done);
+    const msg = sec.querySelector('.savemsg');
+    if(DEMO_MODE){
+      const p = loadLocalProgress();
+      p['Semana'+weekId] = done;
+      saveLocalProgress(p);
+      if(msg) msg.textContent = 'Salvo localmente (modo teste) ✓';
+      return;
+    }
+    if(msg) msg.textContent = 'Salvando...';
+    try{
+      const r = await api({action:'set', email:IDENTITY.email, capitulo:CAPITULO, semana:weekId, valor:done});
+      if(msg) msg.textContent = r.ok ? 'Salvo ✓' : ('Erro: '+r.error);
+    }catch(e){
+      if(msg) msg.textContent = 'Sem conexão — tente novamente.';
+      sec.classList.toggle('done', !done);
+    }
+  }
+
+  function textArea(getVal, setVal, ph){
+    const ta = document.createElement('textarea');
+    ta.value = getVal() || '';
+    if(ph) ta.placeholder = ph;
+    ta.oninput = ()=>{ setVal(ta.value); saveReflexoes(); };
+    return ta;
+  }
+
+  function renderItem(container, wref, item, idx, prefix){
+    if(item.type === 'choice'){
+      container.appendChild(el('label','field', (item.tag?`<span class="day-tag">${item.tag}</span> `:'') + item.label));
+      const group = el('div','');
+      item.options.forEach((opt,oi)=>{
+        const row = el('label','choice-opt');
+        const radio = document.createElement('input');
+        radio.type='radio'; radio.name = prefix+'_choice';
+        radio.checked = wref.items[prefix+idx] === opt;
+        radio.onchange = ()=>{ wref.items[prefix+idx]=opt; saveReflexoes(); };
+        row.appendChild(radio);
+        row.appendChild(el('span','',opt));
+        group.appendChild(row);
+      });
+      container.appendChild(group);
+      return;
+    }
+    if(item.type === 'stars'){
+      container.appendChild(el('label','field', item.label));
+      for(let i=0;i<3;i++){
+        const row = el('div','stars-row');
+        row.appendChild(el('span','','★'));
+        const ta = textArea(
+          ()=> (wref.items[prefix+idx+'_'+i]),
+          (v)=> wref.items[prefix+idx+'_'+i]=v,
+          (item.placeholders && item.placeholders[i]) || ''
+        );
+        row.appendChild(ta);
+        container.appendChild(row);
+      }
+      return;
+    }
+    container.appendChild(el('label','field', (item.tag?`<span class="day-tag">${item.tag}</span> `:'') + item.label));
+    container.appendChild(textArea(
+      ()=> wref.items[prefix+idx],
+      (v)=> wref.items[prefix+idx]=v,
+      item.placeholder
+    ));
+  }
+
+  function renderWeek(w, done){
+    const sec = el('section','week'+(done?' done':''));
+    sec.id = 'week-'+w.id;
+    sec.appendChild(el('h3','',w.title));
+    sec.appendChild(el('div','desc',w.desc));
+    if(w.tip) sec.appendChild(el('div','desc tip',w.tip));
+
+    const wref = reflexoes.weeks[w.id] || (reflexoes.weeks[w.id] = {items:{}});
+
+    if(w.type === 'context'){
+      w.contexts.forEach((cname, ci)=>{
+        const db = el('div','item-block');
+        db.appendChild(el('div','day-tag',cname));
+        db.appendChild(el('label','field','Descreva a situação'));
+        db.appendChild(textArea(()=>wref.items['ctx'+ci], v=>wref.items['ctx'+ci]=v, 'Ex: reunião de equipe em que discordaram da minha proposta...'));
+        const dual = el('div','dual');
+        const c1 = el('div','');
+        c1.appendChild(el('label','field','Sentimentos'));
+        c1.appendChild(textArea(()=>wref.items['sent'+ci], v=>wref.items['sent'+ci]=v, 'Ex: frustração, ansiedade, incômodo...'));
+        const c2 = el('div','');
+        c2.appendChild(el('label','field','Reações'));
+        c2.appendChild(textArea(()=>wref.items['reac'+ci], v=>wref.items['reac'+ci]=v, 'Ex: fiquei em silêncio, levantei a voz, me justifiquei...'));
+        dual.appendChild(c1); dual.appendChild(c2);
+        db.appendChild(dual);
+        sec.appendChild(db);
+      });
+      (w.items||[]).forEach((item,idx)=>{
+        const db = el('div','item-block');
+        renderItem(db, wref, item, 'final'+idx, 'w'+w.id+'_final');
+        sec.appendChild(db);
+      });
+    } else if(w.type === 'cycle'){
+      w.phases.forEach((phase, pi)=>{
+        sec.appendChild(el('div','phase-tag', phase.name));
+        phase.items.forEach((item, idx)=>{
+          const db = el('div','item-block');
+          renderItem(db, wref, item, idx, 'p'+pi+'_i');
+          sec.appendChild(db);
+        });
+      });
+    } else {
+      w.items.forEach((item, idx)=>{
+        const db = el('div','item-block');
+        renderItem(db, wref, item, idx, 'i');
+        sec.appendChild(db);
+      });
+    }
+
+    const bar = el('div','done-bar');
+    const toggle = el('div','done-toggle',
+      `<div class="box">✓</div><div class="done-label">${done ? 'Concluída' : 'Marcar como concluída'}</div>`);
+    toggle.onclick = ()=>{
+      const nowDone = !sec.classList.contains('done');
+      toggle.querySelector('.done-label').textContent = nowDone ? 'Concluída' : 'Marcar como concluída';
+      setWeekDone(w.id, nowDone);
+    };
+    bar.appendChild(toggle);
+    bar.appendChild(el('div','savemsg',''));
+    sec.appendChild(bar);
+    return sec;
+  }
+
+  function drawRadar(values, size=320){
+    const cats = WHEEL_CATS, c=size/2, r=size/2-46, n=cats.length;
+    function pt(i,val){ const ang=-Math.PI/2+i*2*Math.PI/n; const rad=r*(val/10); return [c+rad*Math.cos(ang), c+rad*Math.sin(ang)]; }
+    let svg = `<svg viewBox="0 0 ${size} ${size}" width="100%" style="max-width:${size}px">`;
+    for(let ring=2; ring<=10; ring+=2){ let pts=[]; for(let i=0;i<n;i++) pts.push(pt(i,ring).join(',')); svg += `<polygon points="${pts.join(' ')}" fill="none" stroke="#e3ddf2" stroke-width="1"/>`; }
+    for(let i=0;i<n;i++){ const [x,y]=pt(i,10); svg += `<line x1="${c}" y1="${c}" x2="${x}" y2="${y}" stroke="#e3ddf2" stroke-width="1"/>`; const [lx,ly]=pt(i,12.6); svg += `<text x="${lx}" y="${ly}" font-size="9" fill="#6b5b95" text-anchor="middle" font-weight="700">${cats[i]}</text>`; }
+    let poly=[]; for(let i=0;i<n;i++) poly.push(pt(i, values[i]).join(','));
+    svg += `<polygon points="${poly.join(' ')}" fill="#2ca6a4" fill-opacity="0.35" stroke="#2ca6a4" stroke-width="2"/></svg>`;
+    return svg;
+  }
+
+  function renderReflections(){
+    const sec = el('section','week');
+    sec.appendChild(el('h3','','Reflexões Gerais — Autoconhecimento'));
+    sec.appendChild(el('label','field','3 conquistas para celebrar'));
+    for(let i=0;i<3;i++){
+      const inp = document.createElement('input'); inp.type='text'; inp.style.width='100%';
+      inp.style.padding='10px'; inp.style.border='1.5px solid var(--purple-200)'; inp.style.borderRadius='8px'; inp.style.marginBottom='6px';
+      inp.value = reflexoes.conquistas[i] || '';
+      inp.oninput = ()=>{ reflexoes.conquistas[i]=inp.value; saveReflexoes(); };
+      sec.appendChild(inp);
+    }
+    sec.appendChild(el('label','field','Meus aprendizados no tema'));
+    sec.appendChild(textArea(()=>reflexoes.aprendizados, v=>reflexoes.aprendizados=v));
+
+    sec.appendChild(el('h3','','Autoavaliação da Comunicação'));
+    sec.appendChild(el('div','desc','Avalie seu nível de AUTOCONHECIMENTO colorindo a roda abaixo com a pontuação que melhor representa sua habilidade atual. A escala é de 1 = pouca habilidade a 10 = elevada habilidade.'));
+    const preview = el('div',''); preview.style.textAlign='center';
+    WHEEL_CATS.forEach(cat=>{
+      const row = el('div','');
+      row.style.display='flex'; row.style.alignItems='center'; row.style.gap='10px'; row.style.margin='6px 0'; row.style.fontSize='13px';
+      const lab = el('label','',cat); lab.style.width='150px'; lab.style.fontWeight='700'; lab.style.color='var(--purple-700)';
+      const range = document.createElement('input'); range.type='range'; range.min=1; range.max=10;
+      range.value = reflexoes.wheel[cat] || 5;
+      const val = el('span','', String(range.value));
+      range.oninput = ()=>{ reflexoes.wheel[cat]=parseInt(range.value); val.textContent=range.value; preview.innerHTML = drawRadar(WHEEL_CATS.map(c=>reflexoes.wheel[c]||5)); saveReflexoes(); };
+      row.appendChild(lab); row.appendChild(range); row.appendChild(val);
+      sec.appendChild(row);
+    });
+    preview.innerHTML = drawRadar(WHEEL_CATS.map(c=>reflexoes.wheel[c]||5));
+    sec.appendChild(preview);
+    return sec;
+  }
+
+  function render(){
+    root.innerHTML = '';
+    const wrap = el('div','');
+    const banner = el('div','stripes');
+    banner.innerHTML = `<div class="eyebrow">Voz em Ação — Sua Jornada na Comunicação</div>
+      <h1 style="display:flex;align-items:center;gap:10px">Autoconhecimento
+        <svg width="30" height="30" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="#6b5b95" stroke-width="1.6"/><circle cx="12" cy="12" r="3.4" fill="none" stroke="#2ca6a4" stroke-width="1.6"/></svg>
+      </h1>
+      <div class="hello">Olá, ${IDENTITY.nome || 'colega'} 👋 — suas respostas ficam salvas e você pode voltar quando quiser.
+        <a href="#" id="troca-usuario" style="color:var(--purple-500);font-weight:600;margin-left:10px;">Não é você? Trocar usuário</a>
+      </div>
+      ${DEMO_MODE ? '<div style="margin-top:10px;font-size:12px;color:#8a2b2b;font-weight:700;">⚠ Modo teste — ainda não conectado à planilha da empresa. As conclusões ficam salvas só neste navegador.</div>' : ''}`;
+    wrap.appendChild(banner);
+
+    wrap.appendChild(el('div','quote','"Conhecer a si mesmo é o primeiro passo para transformar a própria realidade."<cite>Sócrates</cite>'));
+
+    [
+      "O autoconhecimento reflete o conhecimento que uma pessoa tem a respeito de si mesma. Saber quais são suas qualidades, desejos, ambições e limitações faz com que você tenha mais facilidade para controlar as emoções, definir objetivos e trilhar uma jornada de autorrealização e felicidade.",
+      "Conhecer mais de si é estar sempre pronto para surpreender-se — no processo de autoconhecimento, podemos identificar diversas coisas que desconhecemos ou negligenciamos por alguma razão.",
+      "Estar aberto a novas experiências é estar disposto a viver de um modo muito mais autêntico. Só é possível aprender coisas novas, desenvolver-se e crescer no decorrer da vida quando estamos dispostos a experimentar o que o mundo e nós mesmos temos a compartilhar.",
+      "Conhecer sobre nós e nossa personalidade ajuda a entender seu Estilo de Comunicação — daí a importância de buscar exercícios e ferramentas de autoconhecimento.",
+      "Marque cada etapa como concluída quando sentir que já praticou o suficiente. Suas respostas escritas ficam salvas só neste navegador, para você reler quando quiser — ninguém mais tem acesso a elas."
+    ].forEach(t=> wrap.appendChild(el('p','',t)));
+
+    const doneMap = {};
+    [1,2,3,4,5].forEach(id=>{
+      const v = profile['Semana'+id];
+      doneMap[id] = v === true || v === 'TRUE' || v === 'true';
+    });
+
+    WEEKS.forEach(w=> wrap.appendChild(renderWeek(w, doneMap[w.id])));
+    wrap.appendChild(renderReflections());
+    root.appendChild(wrap);
+
+    const trocaLink = document.getElementById('troca-usuario');
+    if(trocaLink) trocaLink.onclick = (e)=>{
+      e.preventDefault();
+      if(confirm('Isso vai esquecer os dados deste navegador e pedir a identificação de novo. Confirma?')){
+        localStorage.removeItem(IDENTITY_KEY);
+        window.location.reload();
+      }
+    };
+  }
+
+  function showIdentityForm(){
+    root.innerHTML = '';
+    const gate = el('div','');
+    gate.style.maxWidth = '340px';
+    gate.style.margin = '60px auto';
+    gate.style.fontFamily = "-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif";
+    gate.appendChild(el('h2','','Voz em Ação — Autoconhecimento'));
+    gate.appendChild(el('p','','Preencha seus dados para começar. Isso fica salvo neste navegador — você não vai precisar digitar de novo.'));
+    const fieldStyle = 'width:100%;padding:10px 12px;border:1.5px solid #e3ddf2;border-radius:8px;font-size:14px;margin-bottom:10px;';
+    const nomeInp = document.createElement('input'); nomeInp.placeholder='Nome'; nomeInp.style.cssText=fieldStyle;
+    const emailInp = document.createElement('input'); emailInp.placeholder='E-mail'; emailInp.type='email'; emailInp.style.cssText=fieldStyle;
+    const deptInp = document.createElement('input'); deptInp.placeholder='Departamento'; deptInp.style.cssText=fieldStyle;
+    const btn = document.createElement('button');
+    btn.textContent = 'Começar';
+    btn.style.cssText = 'width:100%;padding:12px;border:none;border-radius:8px;background:#6b5b95;color:#fff;font-weight:700;cursor:pointer;';
+    const err = el('div',''); err.style.cssText='color:#8a2b2b;font-size:13px;margin-top:8px;';
+    btn.onclick = ()=>{
+      if(!nomeInp.value.trim() || !emailInp.value.trim()){
+        err.textContent = 'Preencha nome e e-mail.'; return;
+      }
+      IDENTITY = { nome: nomeInp.value.trim(), email: emailInp.value.trim(), departamento: deptInp.value.trim() };
+      localStorage.setItem(IDENTITY_KEY, JSON.stringify(IDENTITY));
+      boot();
+    };
+    gate.appendChild(nomeInp); gate.appendChild(emailInp); gate.appendChild(deptInp); gate.appendChild(btn); gate.appendChild(err);
+    root.appendChild(gate);
+  }
+
+  async function boot(){
+    root.innerHTML = '<p style="padding:24px;color:#8a86a0">Carregando...</p>';
+    if(DEMO_MODE){
+      const localProgress = loadLocalProgress();
+      profile = { Nome: IDENTITY.nome, Semana1: !!localProgress.Semana1, Semana2: !!localProgress.Semana2,
+        Semana3: !!localProgress.Semana3, Semana4: !!localProgress.Semana4, Semana5: !!localProgress.Semana5 };
+      reflexoes = loadReflexoes();
+      render();
+      return;
+    }
+    try{
+      const r = await api({action:'identify', email:IDENTITY.email, nome:IDENTITY.nome, departamento:IDENTITY.departamento, capitulo:CAPITULO});
+      if(!r.ok){ root.innerHTML = `<div class="banner-msg err">${r.error||'Não foi possível carregar seus dados.'}</div>`; return; }
+      profile = r.data;
+      reflexoes = loadReflexoes();
+      render();
+    }catch(e){
+      root.innerHTML = '<div class="banner-msg err">Erro de conexão com o servidor. Tente novamente em instantes.</div>';
+    }
+  }
+
+  function init(){
+    try{ IDENTITY = JSON.parse(localStorage.getItem(IDENTITY_KEY)); }catch(e){ IDENTITY = null; }
+    if(!IDENTITY || !IDENTITY.email){ showIdentityForm(); return; }
+    boot();
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
