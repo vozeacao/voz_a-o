@@ -1,1 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voz em Ação — Empatia</title>
+<style>
+  body{margin:0;background:#fafafd;}
+  #voz-app{
+    --purple-900:#4a3f6b; --purple-700:#6b5b95; --purple-500:#8a7cb8;
+    --purple-200:#e3ddf2; --purple-100:#f2effa; --teal:#2ca6a4; --ink:#3d3a4a; --paper:#ffffff;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    color:var(--ink); background:var(--paper); max-width:880px; margin:0 auto; padding:0 0 60px 0; line-height:1.55;
+  }
+  #voz-app *{box-sizing:border-box;}
+  #voz-app h1,#voz-app h2,#voz-app h3{font-weight:800;color:var(--purple-900);margin:0;}
+  #voz-app .stripes{background:repeating-linear-gradient(45deg, var(--purple-200), var(--purple-200) 10px, #fff 10px, #fff 20px);border:2px solid var(--purple-500);border-radius:14px;padding:22px 26px;margin:22px 0 18px 0;}
+  #voz-app .eyebrow{font-size:12px;letter-spacing:2px;font-weight:700;color:var(--purple-700);text-transform:uppercase;}
+  #voz-app .badge{display:inline-block;background:var(--purple-700);color:#fff;font-weight:700;font-size:13px;padding:6px 16px;border-radius:20px;margin-top:8px;}
+  #voz-app .hello{font-size:15px;color:var(--purple-700);font-weight:700;margin-top:6px;}
+  #voz-app section.week{border:1px solid var(--purple-200);border-left:6px solid var(--purple-700);border-radius:10px;padding:18px 20px;margin:18px 0;background:#fbfaff;position:relative;}
+  #voz-app section.week.done{border-left-color:var(--teal);background:#f4fbfa;}
+  #voz-app h3{font-size:19px;}
+  #voz-app .desc{color:#5c5670;font-size:14px;margin:8px 0 14px 0;}
+  #voz-app .tip{color:var(--teal);font-weight:600;}
+  #voz-app label.field{display:block;font-size:13px;font-weight:700;color:var(--purple-700);margin:12px 0 4px 0;}
+  #voz-app textarea{width:100%;padding:10px 12px;border:1.5px solid var(--purple-200);border-radius:8px;font-size:14px;font-family:inherit;color:var(--ink);background:#fff;min-height:56px;resize:vertical;}
+  #voz-app .day-block{border-top:1px dashed var(--purple-200);padding-top:12px;margin-top:12px;}
+  #voz-app .day-tag{display:inline-block;background:var(--purple-500);color:#fff;font-weight:700;font-size:11px;padding:3px 10px;border-radius:6px;margin-bottom:6px;}
+  #voz-app .hint{font-size:12px;color:#8a86a0;margin:-8px 0 10px 0;}
+  #voz-app .done-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding-top:14px;border-top:2px solid var(--purple-100);}
+  #voz-app .done-toggle{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;}
+  #voz-app .done-toggle .box{width:26px;height:26px;border-radius:8px;border:2px solid var(--purple-500);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;background:#fff;}
+  #voz-app section.week.done .done-toggle .box{background:var(--teal);border-color:var(--teal);}
+  #voz-app .done-label{font-weight:700;color:var(--purple-700);}
+  #voz-app section.week.done .done-label{color:var(--teal);}
+  #voz-app .savemsg{font-size:12px;color:#8a86a0;}
+  #voz-app .banner-msg{padding:14px 18px;border-radius:10px;font-size:14px;margin:16px 0;}
+  #voz-app .banner-msg.err{background:#fbe7e7;color:#8a2b2b;border:1px solid #f0b8b8;}
+  #voz-app .banner-msg.info{background:#f2effa;color:var(--purple-700);border:1px solid var(--purple-200);}
+</style>
+</head>
+<body>
+<div id="voz-app"><p style="padding:24px;color:#8a86a0">Carregando...</p></div>
 
+<script>
+(function(){
+  // ======= CONFIGURAÇÃO — cole aqui a URL do seu Apps Script implantado =======
+  const CONFIG = {
+    APPS_SCRIPT_URL: 'COLE_AQUI_A_URL_DO_APPS_SCRIPT_/exec'
+  };
+  // =============================================================================
+
+  const root = document.getElementById('voz-app');
+  const CAPITULO = 'Empatia';
+  const IDENTITY_KEY = 'voz_em_acao_identity';
+
+  const WEEKS = [
+    {id:1, title:"Semana 01 — Mudança de Perspectiva",
+     desc:"Promover uma visão ampla da situação, aumentando a capacidade de considerar diferentes perspectivas e sentimentos. Escolha, em qualquer dia desta semana, uma situação em que você discordou ou teve dificuldade de entender o outro.",
+     type:"pyramid",
+     fields:[
+       {key:"situacao", label:"Situação — descreva uma situação com comunicação desafiadora que vivenciou"},
+       {key:"missao", label:"Minha Missão — qual foi sua intenção ao lidar com a situação?"},
+       {key:"sentimentos", label:"Sentimentos Envolvidos — quais sentimentos surgiram em você?"},
+       {key:"visaoOutro", label:"Visão do Outro — qual foi a percepção do outro?"}
+     ],
+     reflections:[
+       {key:"r1", label:"Como foi a experiência de preencher a Pirâmide da Perspectiva? Algo foi mais difícil de responder?"},
+       {key:"r2", label:"O que mudou na sua compreensão após visualizar os diferentes pontos de vista?"}
+     ]},
+    {id:2, title:"Semana 02 — Escuta com Coração",
+     desc:"Ao longo desta semana, em qualquer dia, escolha uma pessoa para treinar a escuta do coração. Converse sobre qualquer assunto, se auto-observe e faça seu check-list durante e após a conversa.",
+     type:"checklist",
+     items:["Mantive contato visual","Não interrompi","Não ofereci soluções durante a fala","Validei emoções (sem julgar)","Estava mentalmente presente e atento"]},
+    {id:3, title:"Semana 03 — Aprimorando a Empatia",
+     desc:"Nas situações do dia a dia desta semana, exercite escrever como seria responder de forma empática.",
+     tip:"Dicas: comece validando o sentimento (\"Imagino que isso tenha sido difícil...\"); evite conselhos automáticos; mostre presença; use frases como \"Faz sentido você se sentir assim.\"",
+     type:"situations",
+     slots:4,
+     reflections:[{key:"r1", label:"Em quais momentos você sentiu que a validação empática ajudou a melhorar a conexão ou o diálogo?"}]},
+    {id:4, title:"Semana 04 — Diário da Gratidão Empática",
+     desc:"Ao longo da semana, registre sua gratidão por situações vividas e envie para a pessoa envolvida. Exemplo: \"Te agradeço pelo feedback que me deu, pois você me fez perceber que preciso melhorar a escuta.\"",
+     type:"journal",
+     slots:4,
+     reflections:[{key:"r1", label:"Reflita: o que a atitude da Gratidão diz sobre seus valores ou suas emoções?"}]}
+  ];
+
+  let profile = null;
+  let reflexoes = {};
+  let IDENTITY = null;
+
+  function el(tag, cls, html){ const e=document.createElement(tag); if(cls) e.className=cls; if(html!==undefined) e.innerHTML=html; return e; }
+
+  function reflexKey(){ return 'voz_reflexoes_'+CAPITULO+'_'+(IDENTITY.email||'').toLowerCase(); }
+  function loadReflexoes(){
+    try{ return JSON.parse(localStorage.getItem(reflexKey())) || {}; }
+    catch(e){ return {}; }
+  }
+  function saveReflexoes(){
+    try{ localStorage.setItem(reflexKey(), JSON.stringify(reflexoes)); }catch(e){}
+  }
+
+  async function api(params){
+    const url = CONFIG.APPS_SCRIPT_URL + '?' + new URLSearchParams(params).toString();
+    const res = await fetch(url);
+    return res.json();
+  }
+
+  const DEMO_MODE = CONFIG.APPS_SCRIPT_URL.indexOf('COLE_AQUI') !== -1;
+  function progressKey(){ return 'voz_progress_'+CAPITULO+'_'+(IDENTITY.email||'').toLowerCase(); }
+  function loadLocalProgress(){ try{ return JSON.parse(localStorage.getItem(progressKey())) || {}; }catch(e){ return {}; } }
+  function saveLocalProgress(p){ try{ localStorage.setItem(progressKey(), JSON.stringify(p)); }catch(e){} }
+
+  async function setWeekDone(weekId, done){
+    const sec = document.getElementById('week-'+weekId);
+    sec.classList.toggle('done', done);
+    const msg = sec.querySelector('.savemsg');
+    if(DEMO_MODE){
+      const p = loadLocalProgress();
+      p['Semana'+weekId] = done;
+      saveLocalProgress(p);
+      if(msg) msg.textContent = 'Salvo localmente (modo teste) ✓';
+      return;
+    }
+    if(msg) msg.textContent = 'Salvando...';
+    try{
+      const r = await api({action:'set', email:IDENTITY.email, capitulo:CAPITULO, semana:weekId, valor:done});
+      if(msg) msg.textContent = r.ok ? 'Salvo ✓' : ('Erro: '+r.error);
+    }catch(e){
+      if(msg) msg.textContent = 'Sem conexão — tente novamente.';
+      sec.classList.toggle('done', !done); // revert visual on failure
+    }
+  }
+
+  function renderWeek(w, progress){
+    const sec = el('section','week'+(progress[w.id] ? ' done':''));
+    sec.id = 'week-'+w.id;
+    sec.appendChild(el('h3','',w.title));
+    sec.appendChild(el('div','desc',w.desc));
+    if(w.tip) sec.appendChild(el('div','desc tip',w.tip));
+
+    const wref = reflexoes[w.id] || (reflexoes[w.id] = {fields:{}, slots:{}, reflections:{}});
+
+    if(w.type==='pyramid'){
+      const pyramidSvg = `<svg viewBox="0 0 320 260" style="max-width:280px;display:block;margin:10px auto 18px auto">
+        <defs><linearGradient id="pyrGrad${w.id}" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#8a7cb8"/><stop offset="100%" stop-color="#4a3f6b"/></linearGradient></defs>
+        <polygon points="160,20 260,220 60,220" fill="url(#pyrGrad${w.id})"/>
+        <line x1="160" y1="20" x2="160" y2="220" stroke="#fff" stroke-width="1.5" stroke-opacity="0.7"/>
+        <line x1="60" y1="220" x2="260" y2="220" stroke="#fff" stroke-width="1.5" stroke-opacity="0.4"/>
+        <text x="160" y="14" text-anchor="middle" font-size="12" font-weight="700" fill="#4a3f6b">Minha Missão</text>
+        <text x="270" y="120" text-anchor="start" font-size="12" font-weight="700" fill="#4a3f6b">Situação</text>
+        <text x="60" y="245" text-anchor="middle" font-size="12" font-weight="700" fill="#4a3f6b">Sentimentos</text>
+        <text x="260" y="245" text-anchor="middle" font-size="12" font-weight="700" fill="#4a3f6b">Visão do Outro</text>
+      </svg>`;
+      sec.appendChild(el('div','',pyramidSvg));
+      w.fields.forEach(f=>{
+        sec.appendChild(el('label','field',f.label));
+        const ta=document.createElement('textarea');
+        ta.value = wref.fields[f.key] || '';
+        ta.oninput=()=>{ wref.fields[f.key]=ta.value; saveReflexoes(); };
+        sec.appendChild(ta);
+      });
+    }
+
+    if(w.type==='checklist'){
+      sec.appendChild(el('div','hint','Repita esse check-list em quantos dias quiser durante a semana — o registro abaixo é livre, use como diário.'));
+      sec.appendChild(el('label','field','Minhas observações da semana sobre a escuta'));
+      const ta=document.createElement('textarea');
+      ta.placeholder = w.items.map(i=>'• '+i).join('\n');
+      ta.style.minHeight='110px';
+      ta.value = wref.fields.notas || '';
+      ta.oninput=()=>{ wref.fields.notas=ta.value; saveReflexoes(); };
+      sec.appendChild(ta);
+    }
+
+    if(w.type==='situations' || w.type==='journal'){
+      for(let i=1;i<=w.slots;i++){
+        const db = el('div','day-block');
+        db.appendChild(el('div','day-tag', (w.type==='situations'?'Situação ':'Registro ')+i));
+        if(w.type==='situations'){
+          db.appendChild(el('label','field','Situação'));
+          const ta1=document.createElement('textarea');
+          ta1.value = (wref.slots['s'+i+'_situacao'])||'';
+          ta1.oninput=()=>{ wref.slots['s'+i+'_situacao']=ta1.value; saveReflexoes(); };
+          db.appendChild(ta1);
+          db.appendChild(el('label','field','Resposta empática'));
+          const ta2=document.createElement('textarea');
+          ta2.value = (wref.slots['s'+i+'_resposta'])||'';
+          ta2.oninput=()=>{ wref.slots['s'+i+'_resposta']=ta2.value; saveReflexoes(); };
+          db.appendChild(ta2);
+        } else {
+          const ta=document.createElement('textarea');
+          ta.placeholder='Registre sua gratidão empática...';
+          ta.value = (wref.slots['j'+i])||'';
+          ta.oninput=()=>{ wref.slots['j'+i]=ta.value; saveReflexoes(); };
+          db.appendChild(ta);
+        }
+        sec.appendChild(db);
+      }
+    }
+
+    (w.reflections||[]).forEach(r=>{
+      sec.appendChild(el('label','field',r.label));
+      const ta=document.createElement('textarea');
+      ta.value = wref.reflections[r.key] || '';
+      ta.oninput=()=>{ wref.reflections[r.key]=ta.value; saveReflexoes(); };
+      sec.appendChild(ta);
+    });
+
+    const bar = el('div','done-bar');
+    const toggle = el('div','done-toggle',
+      `<div class="box">✓</div><div class="done-label">${progress[w.id] ? 'Semana concluída' : 'Marcar semana como concluída'}</div>`);
+    toggle.onclick = ()=>{
+      const nowDone = !sec.classList.contains('done');
+      toggle.querySelector('.done-label').textContent = nowDone ? 'Semana concluída' : 'Marcar semana como concluída';
+      setWeekDone(w.id, nowDone);
+    };
+    bar.appendChild(toggle);
+    bar.appendChild(el('div','savemsg',''));
+    sec.appendChild(bar);
+
+    return sec;
+  }
+
+  function render(){
+    root.innerHTML = '';
+    const wrap = el('div','');
+    const banner = el('div','stripes');
+    banner.innerHTML = `<div class="eyebrow">Voz em Ação — Sua Jornada na Comunicação</div>
+      <h1 style="display:flex;align-items:center;gap:10px">Empatia
+        <svg width="30" height="30" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-9.5-8.8C.8 8 2 4.5 5.3 3.6 7.6 3 9.8 4 11 5.8c.4.6 1.6.6 2 0C14.2 4 16.4 3 18.7 3.6 22 4.5 23.2 8 21.5 11.2 19 15.6 12 20 12 20z" fill="none" stroke="#6b5b95" stroke-width="1.6"/></svg>
+      </h1>
+      <div class="hello">Olá, ${IDENTITY.nome || 'colega'} 👋 — suas respostas ficam salvas e você pode voltar quando quiser.
+        <a href="#" id="troca-usuario" style="color:var(--purple-500);font-weight:600;margin-left:10px;">Não é você? Trocar usuário</a>
+      </div>
+      ${DEMO_MODE ? '<div style="margin-top:10px;font-size:12px;color:#8a2b2b;font-weight:700;">⚠ Modo teste — ainda não conectado à planilha da empresa. As conclusões ficam salvas só neste navegador.</div>' : ''}`;
+    wrap.appendChild(banner);
+
+    const introTexts = [
+      "A empatia é um processo interno de experimentar e imaginar o que a outra pessoa pesaria e pensaria, caso estivesse na mesma situação vivenciada por você.",
+      "Ela funciona como um músculo que precisa se fortalecer todos os dias — é o elo de conexão com a nossa própria humanidade.",
+      "Marque cada semana como concluída quando sentir que já praticou o suficiente. Suas respostas escritas ficam salvas só neste navegador, para você reler quando quiser — ninguém mais tem acesso a elas."
+    ];
+    introTexts.forEach(t=> wrap.appendChild(el('p','',t)));
+
+    const progress = {
+      1: profile.Semana1 === true || profile.Semana1 === 'TRUE' || profile.Semana1 === 'true',
+      2: profile.Semana2 === true || profile.Semana2 === 'TRUE' || profile.Semana2 === 'true',
+      3: profile.Semana3 === true || profile.Semana3 === 'TRUE' || profile.Semana3 === 'true',
+      4: profile.Semana4 === true || profile.Semana4 === 'TRUE' || profile.Semana4 === 'true'
+    };
+
+    WEEKS.forEach(w=> wrap.appendChild(renderWeek(w, progress)));
+    root.appendChild(wrap);
+
+    const trocaLink = document.getElementById('troca-usuario');
+    if(trocaLink) trocaLink.onclick = (e)=>{
+      e.preventDefault();
+      if(confirm('Isso vai esquecer os dados deste navegador e pedir a identificação de novo. Confirma?')){
+        localStorage.removeItem(IDENTITY_KEY);
+        window.location.reload();
+      }
+    };
+  }
+
+  function showIdentityForm(){
+    root.innerHTML = '';
+    const gate = el('div','gate');
+    gate.appendChild(el('h2','','Voz em Ação — Empatia'));
+    gate.appendChild(el('p','','Preencha seus dados para começar. Isso fica salvo neste navegador — você não vai precisar digitar de novo.'));
+    const fieldStyle = 'width:100%;padding:10px 12px;border:1.5px solid var(--purple-200);border-radius:8px;font-size:14px;margin-bottom:10px;';
+    const nomeInp = document.createElement('input'); nomeInp.placeholder='Nome'; nomeInp.style.cssText=fieldStyle;
+    const emailInp = document.createElement('input'); emailInp.placeholder='E-mail'; emailInp.type='email'; emailInp.style.cssText=fieldStyle;
+    const deptInp = document.createElement('input'); deptInp.placeholder='Departamento'; deptInp.style.cssText=fieldStyle;
+    const btn = document.createElement('button');
+    btn.className = 'primary';
+    btn.textContent = 'Começar';
+    const err = el('div',''); err.style.cssText='color:#8a2b2b;font-size:13px;margin-top:8px;';
+    btn.onclick = ()=>{
+      if(!nomeInp.value.trim() || !emailInp.value.trim()){ err.textContent = 'Preencha nome e e-mail.'; return; }
+      IDENTITY = { nome: nomeInp.value.trim(), email: emailInp.value.trim(), departamento: deptInp.value.trim() };
+      localStorage.setItem(IDENTITY_KEY, JSON.stringify(IDENTITY));
+      boot();
+    };
+    gate.appendChild(nomeInp); gate.appendChild(emailInp); gate.appendChild(deptInp); gate.appendChild(btn); gate.appendChild(err);
+    root.appendChild(gate);
+  }
+
+  async function boot(){
+    root.innerHTML = '<p style="padding:24px;color:#8a86a0">Carregando...</p>';
+    if(DEMO_MODE){
+      const localProgress = loadLocalProgress();
+      profile = { Nome: IDENTITY.nome, Semana1: !!localProgress.Semana1, Semana2: !!localProgress.Semana2,
+        Semana3: !!localProgress.Semana3, Semana4: !!localProgress.Semana4 };
+      reflexoes = loadReflexoes();
+      render();
+      return;
+    }
+    try{
+      const r = await api({action:'identify', email:IDENTITY.email, nome:IDENTITY.nome, departamento:IDENTITY.departamento, capitulo:CAPITULO});
+      if(!r.ok){
+        root.innerHTML = `<div class="banner-msg err" style="margin:24px">${r.error||'Não foi possível carregar seus dados.'}</div>`;
+        return;
+      }
+      profile = r.data;
+      reflexoes = loadReflexoes();
+      render();
+    }catch(e){
+      root.innerHTML = '<div class="banner-msg err" style="margin:24px">Erro de conexão com o servidor. Tente novamente em instantes.</div>';
+    }
+  }
+
+  function init(){
+    try{ IDENTITY = JSON.parse(localStorage.getItem(IDENTITY_KEY)); }catch(e){ IDENTITY = null; }
+    if(!IDENTITY || !IDENTITY.email){ showIdentityForm(); return; }
+    boot();
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
