@@ -370,8 +370,24 @@ async function api(params, post){
   const body = new URLSearchParams(params);
   try{
     const r = post ? await fetch(CONFIG.APPS_SCRIPT_URL,{method:"POST",body}) : await fetch(CONFIG.APPS_SCRIPT_URL+"?"+body);
-    return await r.json();
-  }catch(e){ return {ok:false}; }
+    const txt = await r.text();
+    try{ return JSON.parse(txt); }
+    catch(e){ return {ok:false,error:"resposta inesperada do Google (HTTP "+r.status+")"}; }
+  }catch(e){ console.warn("Voz em Ação: falha ao falar com o Apps Script", e); return {ok:false,error:"o navegador não conseguiu acessar o Google ("+(e&&e.message||e)+")"}; }
+}
+const erroMsg = r => "Erro na planilha: "+((r&&r.error)||"sem resposta");
+/* garante que existam as linhas da pessoa na planilha (auto-correção se uma gravação falhar por "registro não encontrado") */
+async function ensureRows(){
+  for(const cap of [CAP_INTRO,CAP]){
+    const r = await api({action:"identify",email:identity.email,nome:identity.nome,departamento:identity.departamento||"",empresa:CONFIG.EMPRESA,capitulo:cap});
+    if(!r||!r.ok) return r;
+  }
+  return {ok:true};
+}
+async function callWithRepair(params,post){
+  let r = await api(params,post);
+  if(r && !r.ok && /não encontrado/i.test(r.error||"")){ const e = await ensureRows(); if(e.ok) r = await api(params,post); else r = e; }
+  return r;
 }
 const partOf = cap => Object.fromEntries(Object.entries(state.answers).filter(([k])=>k.startsWith("t_")===(cap===CAP_INTRO)));
 async function syncIdentify(){
@@ -379,13 +395,13 @@ async function syncIdentify(){
   for(const cap of [CAP_INTRO,CAP]){
     const r = await api({action:"identify",email:identity.email,nome:identity.nome,departamento:identity.departamento||"",empresa:CONFIG.EMPRESA,capitulo:cap});
     if(!r) continue; any=true;
-    if(!r.ok){ fail=true; continue; }
+    if(!r.ok){ fail=r; continue; }
     if(cap===CAP) for(let n=1;n<=5;n++){ const v=r.data["Semana"+n]; if(v===true||v==="TRUE"||v==="true") state.done[n]=true; }
     try{ const s=JSON.parse(r.data.Respostas_JSON||"{}"); Object.keys(s).forEach(k=>{ if(A(k)===undefined||A(k)==="") state.answers[k]=s[k]; }); }catch(e){}
   }
   store.set(LS_ST,state);
   if(!any) return setSync(identity&&identity.demo ? "Modo demonstração — não grava na planilha" : "Salvo neste aparelho");
-  setSync(fail?"Sem conexão com a planilha":"Sincronizado com a planilha",fail);
+  setSync(fail?erroMsg(fail):"Sincronizado com a planilha",!!fail);
 }
 let sv;
 function queueSave(){
@@ -393,15 +409,15 @@ function queueSave(){
   if(!CONFIG.APPS_SCRIPT_URL || !identity || identity.demo){ setSync(identity&&identity.demo ? "Modo demonstração — não grava na planilha":"Salvo neste aparelho"); return; }
   clearTimeout(sv);
   sv=setTimeout(async()=>{
-    let ok=true;
-    for(const cap of [CAP_INTRO,CAP]){ const r=await api({action:"saveAnswers",email:identity.email,capitulo:cap,data:JSON.stringify(partOf(cap))},true); ok=ok&&!!(r&&r.ok); }
-    setSync(ok?"Sincronizado com a planilha":"Sem conexão — salvo neste aparelho",!ok);
+    let bad=null;
+    for(const cap of [CAP_INTRO,CAP]){ const r=await callWithRepair({action:"saveAnswers",email:identity.email,capitulo:cap,data:JSON.stringify(partOf(cap))},true); if(!(r&&r.ok)) bad=r||{error:"sem resposta"}; }
+    setSync(bad?erroMsg(bad)+" — salvo neste aparelho":"Sincronizado com a planilha",!!bad);
   },800);
 }
 async function syncDone(n){
   store.set(LS_ST,state);
-  const r = await api({action:"set",email:identity&&identity.email,capitulo:CAP,semana:n,valor:!!state.done[n]});
-  if(r) setSync(r.ok?"Sincronizado com a planilha":"Sem conexão — salvo neste aparelho",!r.ok);
+  const r = await callWithRepair({action:"set",email:identity&&identity.email,capitulo:CAP,semana:n,valor:!!state.done[n]});
+  if(r) setSync(r.ok?"Sincronizado com a planilha":erroMsg(r)+" — salvo neste aparelho",!r.ok);
 }
 function setSync(msg,off){ syncMsg=msg; const el=document.querySelector(".who .m"); if(el) el.textContent=msg; const d=document.querySelector(".who .dot"); if(d) d.classList.toggle("off",!!off); }
 
@@ -624,7 +640,7 @@ function render(){
   else if(p.k==="refl") h=reflHTML();
   else if(p.k==="ciclo") h=cicloHTML(p.c);
   else h=fimHTML();
-  $stage.innerHTML=h; state.page=page; store.set(LS_ST,state);
+  $stage.innerHTML=h; state.page=page; store.set(LS_ST,state); syncUrl();
 }
 
 /* ====== AÇÕES ====== */
@@ -689,8 +705,25 @@ function fit(){ const W=app.clientWidth,H=app.clientHeight, s=Math.min(W/1760,H/
   $stage.style.transform=`translate(${(W-1760*s)/2}px,${(H-1320*s)/2}px) scale(${s})`; }
 addEventListener("resize",fit); fit();
 
-page = Math.min(state.page||0, PAGES.length-1);
-if(page>0 && canEnter(page)) page=0;
+/* Link por capítulo: ?capitulo=introducao | teste | autoconhecimento  (o endereço também acompanha a navegação) */
+const SLUG = {intro:"introducao", teste:"teste", cap:"autoconhecimento"};
+const SLUG_NAME = {introducao:"Introdução", teste:"Teste de Comunicação", autoconhecimento:"Autoconhecimento"};
+function syncUrl(){
+  const p=PAGES[page], slug=SLUG[p.sec];
+  document.title = "Voz em Ação" + (slug ? " · "+SLUG_NAME[slug] : "");
+  try{
+    const u=new URL(location.href);
+    if(slug) u.searchParams.set("capitulo",slug); else u.searchParams.delete("capitulo");
+    history.replaceState(null,"",u);
+  }catch(e){}
+}
+function startPage(){
+  let want=null; try{ want=new URLSearchParams(location.search).get("capitulo"); }catch(e){}
+  const target = {introducao:IDX(p=>p.k==="intro"&&p.i===1), teste:IDX(p=>p.k==="tinstr"), autoconhecimento:IDX(p=>p.k==="div")}[want];
+  if(target>=0 && target!==undefined){ let i=target; for(let j=1;j<=target;j++) if(canEnter(j)){ i=j-1; break; } return i; }
+  let i=Math.min(state.page||0, PAGES.length-1); return (i>0 && canEnter(i)) ? 0 : i;
+}
+page = startPage();
 if(identity && !identity.demo) syncIdentify().then(render); else if(identity) syncMsg="Modo demonstração — não grava na planilha";
 render();
 </script>
