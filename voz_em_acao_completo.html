@@ -1592,8 +1592,8 @@ const img = (n,style="") => `<img src="${IMG[n]}" alt="" style="display:block;${
 
 /* Materiais de apoio (antes no envelope físico, agora em link): clique para ver a folha inteira. */
 const MATERIAIS = {
-  sentimentos: {titulo:"Lista de Sentimentos e Necessidades Humanas", img:"sentimentos", pdf:"materiais/lista-de-sentimentos.pdf"},
-  matriz: {titulo:"Matriz da Comunicação", img:"matriz", pdf:"materiais/matriz-da-comunicacao.pdf"}
+  sentimentos: {titulo:"Lista de Sentimentos e Necessidades Humanas", img:"sentimentos", pdf:"lista-de-sentimentos.pdf"},
+  matriz: {titulo:"Matriz da Comunicação", img:"matriz", pdf:"matriz-da-comunicacao.pdf"}
 };
 const linkMaterial = (chave,rotulo) => `<button type="button" class="mat-link" data-material="${chave}">${rotulo}</button>`;
 function openMaterial(chave){
@@ -1745,7 +1745,7 @@ let PT = false;
 function makePages(pt){
   const L=[{k:"capa",s:0}];
   const add=(p,n=1)=>{ const c=pt?n:1; for(let s=0;s<c;s++) L.push(Object.assign({},p,{s})); };
-  for(let i=1;i<=6;i++) add({k:"intro",i,sec:"intro"}, {1:2,2:2,3:3}[i]||1);
+  for(let i=1;i<=6;i++) add({k:"intro",i,sec:"intro"}, {1:2,2:2,3:3,4:2}[i]||1);
   add({k:"tinstr",sec:"teste"},2);
   for(let b=0;b<12;b++) add({k:"tblock",b,sec:"teste"},2);
   add({k:"tres",sec:"teste"},2);
@@ -2164,7 +2164,13 @@ function ptHTML(p){
       return `<section class="screen pv"><div class="pvh"><div class="pvtop"><div class="pvk">OS TRÊS PILARES · ${s+1} DE 3</div>${jumpMenu()}</div></div>
         <div class="pcard"><div class="ph" style="background:${q[0]}"><h3>${q[1]}</h3><div class="lead">${q[2]}</div></div>
         <div class="pvb fit" style="margin:0;padding:24px 30px">${run(q[3],"<b>Na prática é:</b>")}<ul>${q[4].map(b=>`<li>${b}</li>`).join("")}</ul></div></div>${nav(true)}</section>`; }
-    if(p.i===4) return pvPage("INTRODUÇÃO · CICLO DA TRANSFORMAÇÃO","Como o Ciclo se fecha?",`<h3 style="margin:0 0 6px;color:var(--purple)">Nova Consciência <span style="font-weight:500;font-style:italic">— Evoluo quando aprendo.</span></h3>${run("O Ciclo se fecha de forma contínua, pois a jornada do desenvolvimento é um aprendizado diário, ou seja:")}<ul><li>A cada nova etapa de mudança, voltamos à Consciência inicial e percebemos o impacto de aspectos trabalhados.</li><li>Os resultados reforçam nossa Motivação, nos mantendo engajados no processo de evolução comunicacional contínuo.</li><li>Essa nova percepção nos leva novamente à Ação, experimentando ajustes.</li></ul>${run("Assim, esse ciclo ganha esse novo pilar, a Nova Consciência, que permite que a comunicação se torne um instrumento cíclico e poderoso de conexão e crescimento pessoal.")}<div style="margin:14px auto 0;width:100%">${img("ciclo4","width:100%")}</div><div style="text-align:center;font-style:italic;font-weight:600;font-size:1.3em;color:var(--purple);margin-top:14px">Aproveite esta oportunidade única!</div>`);
+    if(p.i===4){
+      if(s===0) return pvPage("INTRODUÇÃO · CICLO DA TRANSFORMAÇÃO","Como o Ciclo se fecha?",`<h3 style="margin:0 0 6px;color:var(--purple)">Nova Consciência <span style="font-weight:500;font-style:italic">— Evoluo quando aprendo.</span></h3>${run("O Ciclo se fecha de forma contínua, pois a jornada do desenvolvimento é um aprendizado diário, ou seja:")}<ul><li>A cada nova etapa de mudança, voltamos à Consciência inicial e percebemos o impacto de aspectos trabalhados.</li><li>Os resultados reforçam nossa Motivação, nos mantendo engajados no processo de evolução comunicacional contínuo.</li><li>Essa nova percepção nos leva novamente à Ação, experimentando ajustes.</li></ul>${run("Assim, esse ciclo ganha esse novo pilar, a Nova Consciência, que permite que a comunicação se torne um instrumento cíclico e poderoso de conexão e crescimento pessoal.")}`);
+      return `<section class="screen pv" style="justify-content:center;align-items:center;padding:30px 40px">
+        <div class="pvtop" style="position:absolute;top:20px;left:20px;right:20px"><span></span>${jumpMenu()}</div>
+        <div style="width:100%">${img("ciclo4","width:100%")}</div>
+        <div style="text-align:center;font-style:italic;font-weight:600;font-size:38px;color:var(--purple);margin-top:24px">Aproveite esta oportunidade única!</div>${nav(true)}</section>`;
+    }
     if(p.i===5){ const it=(n,t,d)=>`<div class="oc"><div class="n">${n}</div><div><b>${t}</b> ${d}</div></div>`;
       return pvPage("ORIENTAÇÕES","Como sua jornada está estruturada",`<p>Este material foi criado para te acompanhar no desenvolvimento de uma comunicação mais consciente, empática, autêntica e transformadora. Sua jornada foi dividida em 12 temas. Cada tema contém:</p><div class="ocs">${it(1,"Introdução Conceitual","sobre o que é cada tema e sua importância na Comunicação.")}${it(2,"Atividades Diárias,","4 semanas por tema, com práticas e reflexões simples, porém poderosas.")}${it(3,"Autoavaliação","ao final de cada tema, para refletir sobre suas conquistas.")}${it(4,"Material de Apoio","acessado por link (pdf), usado em algumas tarefas.")}${it(5,"Curadoria de Conteúdo","no site www.vozemacao.com: livros, filmes, documentários e videoaulas.")}</div>`); }
     return pvPage("INTRODUÇÃO","Como usar o Planner Voz em Ação?",`<ul><li>Estabeleça seu ritmo e pratique um tema por vez.</li><li>Faça as atividades propostas diariamente, ou agrupe conforme sua disponibilidade semanal. O importante é manter a constância das práticas.</li><li>Use os espaços para escrever, rabiscar, pensar alto. Este material é somente seu!</li><li>Revise suas autoavaliações ao longo do tempo e você vai se surpreender com sua evolução!</li></ul><div class="dica"><h3>Dica final: sua voz importa!</h3>${run("Não se trata apenas de falar bem. Trata-se de se conectar com autenticidade, escutar com presença, expressar com verdade e transformar com coragem.","<b>Vamos juntos? Coloque sua Voz em Ação!</b>")}</div>`);
