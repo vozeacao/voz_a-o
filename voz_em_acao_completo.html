@@ -181,10 +181,13 @@ svg{display:block}
 .lightbox{position:absolute;inset:0;background:rgba(40,32,32,.7);display:grid;place-items:center;z-index:9;padding:40px}
 .lb-box{width:min(1000px,100%);max-height:100%;background:var(--white);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.4)}
 .lb-top{flex:none;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 26px;background:var(--purple);color:var(--white);font-family:var(--display);font-weight:700;font-size:28px;letter-spacing:.03em}
-.lb-top button{background:none;border:0;color:inherit;font-size:32px;line-height:1;padding:4px}
+.lb-top span{flex:1;min-width:0}
+.lb-top button{background:none;border:0;color:inherit;font-size:32px;line-height:1;padding:4px;flex:none}
+.lb-pdf{flex:none;color:var(--white);font-family:var(--body);font-weight:700;font-size:22px;text-decoration:underline;white-space:nowrap}
 .lb-scroll{flex:1;min-height:0;overflow:auto;padding:20px}
 .pt .lightbox{padding:14px}
-.pt .lb-top{font-size:22px;padding:14px 18px}
+.pt .lb-top{font-size:20px;padding:14px 16px;flex-wrap:wrap;row-gap:8px}
+.pt .lb-pdf{font-size:17px}
 
 /* ===== VERSÃO VERTICAL (celular em pé) — tela de 800 px de largura, altura acompanha o aparelho ===== */
 .pt #stage{font-size:26px}
@@ -1589,15 +1592,15 @@ const img = (n,style="") => `<img src="${IMG[n]}" alt="" style="display:block;${
 
 /* Materiais de apoio (antes no envelope físico, agora em link): clique para ver a folha inteira. */
 const MATERIAIS = {
-  sentimentos: {titulo:"Lista de Sentimentos e Necessidades Humanas", img:"sentimentos"},
-  matriz: {titulo:"Matriz da Comunicação", img:"matriz"}
+  sentimentos: {titulo:"Lista de Sentimentos e Necessidades Humanas", img:"sentimentos", pdf:"materiais/lista-de-sentimentos.pdf"},
+  matriz: {titulo:"Matriz da Comunicação", img:"matriz", pdf:"materiais/matriz-da-comunicacao.pdf"}
 };
 const linkMaterial = (chave,rotulo) => `<button type="button" class="mat-link" data-material="${chave}">${rotulo}</button>`;
 function openMaterial(chave){
   const m=MATERIAIS[chave]; if(!m) return;
   $layer.querySelector(".lightbox")?.remove();
   const el=document.createElement("div"); el.className="lightbox"; el.setAttribute("role","dialog"); el.setAttribute("aria-label",m.titulo);
-  el.innerHTML=`<div class="lb-box"><div class="lb-top"><span>${m.titulo}</span><button type="button" class="lb-close" aria-label="Fechar">✕</button></div><div class="lb-scroll">${img(m.img,"width:100%")}</div></div>`;
+  el.innerHTML=`<div class="lb-box"><div class="lb-top"><span>${m.titulo}</span><a class="lb-pdf" href="${m.pdf}" target="_blank" rel="noopener">Abrir PDF para imprimir</a><button type="button" class="lb-close" aria-label="Fechar">✕</button></div><div class="lb-scroll">${img(m.img,"width:100%")}</div></div>`;
   el.addEventListener("click",e=>{ if(e.target===el || e.target.closest(".lb-close")) el.remove(); });
   $layer.appendChild(el);
 }
@@ -1773,6 +1776,12 @@ const store = {
 };
 let state = store.get(LS_ST) || {answers:{}, done:{}, page:0};
 let identity = store.get(LS_ID);
+/* Trava de segurança: o progresso salvo (state) só vale para quem está marcado em state.ownerEmail.
+   Se a identidade guardada for de outra pessoa (ou tiver sido apagada e recriada com outro e-mail
+   sem limpar o progresso junto), começa do zero em vez de herdar a página/respostas de outra pessoa. */
+if(identity && !identity.demo && state.ownerEmail && state.ownerEmail!==identity.email.toLowerCase()){
+  state = {answers:{}, done:{}, page:0};
+}
 let syncMsg = "", page = 0, flagMissing = null, toastT;
 const A = k => state.answers[k];
 
@@ -2243,9 +2252,13 @@ function askIdentity(then, notice, opts={}){
   const comCodigo = !!CONFIG.APPS_SCRIPT_URL;
 
   function finish(nome,email,empresa,whatsapp,dep,token){
-    const trocou = identity && identity.email && identity.email.toLowerCase()!==email.toLowerCase();
+    const emailNorm = email.toLowerCase();
+    /* o progresso salvo (state) pertence a quem está em state.ownerEmail — nunca ao que a variável "identity" tinha
+       na memória (ela pode ter sido apagada por engano sem apagar o progresso junto). Se for outra pessoa, começa do zero. */
+    const trocou = !!state.ownerEmail && state.ownerEmail!==emailNorm;
     if(trocou){ state={answers:{},done:{},page:0}; page=0; }   // outra pessoa no mesmo aparelho: não mistura os dados
-    identity={nome,email,empresa,whatsapp,departamento:dep,token:token||""}; store.set(LS_ID,identity); store.set(LS_ST,state);
+    state.ownerEmail = emailNorm; store.set(LS_ST,state);
+    identity={nome,email,empresa,whatsapp,departamento:dep,token:token||""}; store.set(LS_ID,identity);
     m.remove(); authPrompt=false;
     if(trocou){ go(1); syncIdentify(); return; }   // pessoa nova neste aparelho: começa do zero; sincroniza em segundo plano
     syncIdentify({resume:!!opts.resume, after: resumed => then && then(resumed)});
